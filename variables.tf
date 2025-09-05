@@ -5,9 +5,9 @@ variable "region" {
 }
 
 variable "base_domain" {
-  description = "Training suffix (e.g., lab)"
+  description = "Training suffix (e.g., trng.lab)"
   type        = string
-  default     = "lab"
+  default     = "trng.lab"
 }
 
 variable "ssh_key_name" {
