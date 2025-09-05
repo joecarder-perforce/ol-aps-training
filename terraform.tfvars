@@ -1,4 +1,4 @@
-# Example: stamp a single cluster 's1' in eu-south-1 (Milan), close to Malta
+# Example: stamp a single cluster 'so' in eu-south-1 (Milan
 region      = "eu-south-1"
 base_domain = "trng.lab"
 ssh_key_name= "ocp-class"
