@@ -252,7 +252,7 @@ resource "aws_instance" "bootstrap" {
   associate_public_ip_address = true
   key_name                    = var.ssh_key_name
   credit_specification { cpu_credits = "unlimited" }
-  user_data = local.bootstrap_user_data_b64
+  user_data_base64 = local.bootstrap_user_data_b64
 
   root_block_device {
     volume_size = var.bootstrap_root_volume_size
@@ -273,7 +273,7 @@ resource "aws_instance" "master" {
   associate_public_ip_address = true
   key_name                    = var.ssh_key_name
   credit_specification { cpu_credits = "unlimited" }
-  user_data = local.master_user_data_b64
+  user_data_base64 = local.master_user_data_b64
 
   root_block_device {
     volume_size = var.master_root_volume_size

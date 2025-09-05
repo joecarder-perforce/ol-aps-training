@@ -33,7 +33,7 @@ module "cluster" {
   master_root_volume_size    = coalesce(try(each.value.master_root_volume_size, null), local.defaults.master_root_volume_size)
   bootstrap_root_volume_size = coalesce(try(each.value.bootstrap_root_volume_size, null), local.defaults.bootstrap_root_volume_size)
   rhcos_ami_id               = coalesce(try(each.value.rhcos_ami_id, null), local.defaults.rhcos_ami_id)
-  apps_lb_dns_name           = coalesce(try(each.value.apps_lb_dns_name, null), local.defaults.apps_lb_dns_name)
+  apps_lb_dns_name           = lookup(each.value, "apps_lb_dns_name", "")
 
   # tags (merge global + per-cluster)
   tags = merge(var.common_tags, try(each.value.extra_tags, {}), { Cluster = each.key })
