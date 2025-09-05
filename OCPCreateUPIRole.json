@@ -7,7 +7,9 @@
       "Action": [
         "sts:GetCallerIdentity",
         "ec2:Describe*",
-        "elasticloadbalancing:Describe*"
+        "elasticloadbalancing:Describe*",
+        "servicequotas:ListAWSDefaultServiceQuotas",
+        "tag:GetResources"
       ],
       "Resource": "*"
     },
@@ -26,62 +28,97 @@
       "Condition": { "StringEquals": { "aws:RequestedRegion": "eu-south-1" } }
     },
     {
-      "Sid": "S3IgnBuckets",
+      "Sid": "IAMForInstanceProfilesAndManifests",
       "Effect": "Allow",
       "Action": [
-        "s3:CreateBucket",
-        "s3:DeleteBucket",
-        "s3:GetBucketLocation",
-        "s3:ListBucket",
-        "s3:PutBucketPolicy",
-        "s3:GetBucketPolicy",
-        "s3:PutBucketPublicAccessBlock",
-        "s3:GetBucketPublicAccessBlock",
-        "s3:PutBucketTagging",
-        "s3:GetBucketTagging",
-        "s3:PutBucketAcl",
-        "s3:GetBucketAcl",
-        "s3:PutBucketOwnershipControls",
-        "s3:GetBucketOwnershipControls",
-        "s3:PutEncryptionConfiguration",
-        "s3:GetEncryptionConfiguration",
-        "s3:GetBucketCORS",
-        "s3:PutBucketCORS",
-        "s3:GetBucketVersioning",
-        "s3:PutBucketVersioning",
-        "s3:GetLifecycleConfiguration",
-        "s3:PutLifecycleConfiguration",
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject",
-        "s3:PutObjectAcl"
+        "iam:AddRoleToInstanceProfile",
+        "iam:CreateInstanceProfile",
+        "iam:CreateRole",
+        "iam:DeleteInstanceProfile",
+        "iam:DeleteRole",
+        "iam:DeleteRolePolicy",
+        "iam:GetInstanceProfile",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:GetUser",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListRoles",
+        "iam:ListUsers",
+        "iam:PassRole",
+        "iam:PutRolePolicy",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:SimulatePrincipalPolicy",
+        "iam:TagInstanceProfile",
+        "iam:TagRole",
+        "iam:GetUserPolicy",
+        "iam:ListAccessKeys",
+        "iam:PutUserPolicy",
+        "iam:TagUser",
+        "iam:CreateServiceLinkedRole"
       ],
-      "Resource": [
-        "arn:aws:s3:::ocp-*ign-eu-south-1-*",
-        "arn:aws:s3:::ocp-*ign-eu-south-1-*/*"
-      ]
+      "Resource": "*"
     },
     {
       "Sid": "Route53ForUPI",
       "Effect": "Allow",
       "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:ChangeTagsForResource",
         "route53:CreateHostedZone",
         "route53:DeleteHostedZone",
-        "route53:ChangeResourceRecordSets",
-
+        "route53:GetChange",
+        "route53:GetHostedZone",
         "route53:ListHostedZones",
         "route53:ListHostedZonesByName",
-        "route53:GetHostedZone",
         "route53:ListResourceRecordSets",
         "route53:ListTagsForResource",
-        "route53:ChangeTagsForResource",
-
-        "route53:GetChange",
-        "route53:AssociateVPCWithHostedZone",
-        "route53:DisassociateVPCFromHostedZone"
+        "route53:UpdateHostedZoneComment"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "S3IgnBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:PutBucketPolicy",
+        "s3:GetBucketPolicy",
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+        "s3:PutBucketAcl",
+        "s3:GetBucketAcl",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutLifecycleConfiguration",
+        "s3:GetBucketLocation",
+        "s3:GetBucketLogging",
+        "s3:GetBucketObjectLockConfiguration",
+        "s3:GetBucketCors",
+        "s3:GetBucketWebsite",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListBucketVersions"
+      ],
+      "Resource": [
+        "arn:aws:s3:::ocp-*ign-eu-south-1-*"
+      ]
+    },
+    {
+      "Sid": "S3IgnObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObjectAcl",
+        "s3:GetObjectAcl",
+        "s3:PutObjectTagging",
+        "s3:GetObjectTagging",
+        "s3:GetObjectVersion",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": "arn:aws:s3:::ocp-*ign-eu-south-1-*/*"
     }
   ]
 }
-
