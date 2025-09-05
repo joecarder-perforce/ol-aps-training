@@ -332,7 +332,7 @@ resource "aws_route53_record" "api_int" {
 
 # Optional: create *.apps once you know the router LB DNS name
 resource "aws_route53_record" "apps_wildcard" {
-  count   = length(var.apps_lb_dns_name) > 0 ? 1 : 0
+  count = var.apps_lb_dns_name != null && var.apps_lb_dns_name != "" ? 1 : 0
   zone_id = aws_route53_zone.private.zone_id
   name    = "*.apps.${local.zone_name}"
   type    = "CNAME"
