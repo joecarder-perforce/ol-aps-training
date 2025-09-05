@@ -1,7 +1,8 @@
 {
   "Version": "2012-10-17",
   "Statement": [
-    { "Sid": "STSAndDescribe",
+    {
+      "Sid": "STSAndDescribe",
       "Effect": "Allow",
       "Action": [
         "sts:GetCallerIdentity",
@@ -10,50 +11,78 @@
       ],
       "Resource": "*"
     },
-    { "Sid": "EC2AllInRegion",
+    {
+      "Sid": "EC2AllInRegion",
       "Effect": "Allow",
       "Action": "ec2:*",
       "Resource": "*",
       "Condition": { "StringEquals": { "aws:RequestedRegion": "eu-south-1" } }
     },
-    { "Sid": "ELBv2AllInRegion",
+    {
+      "Sid": "ELBv2AllInRegion",
       "Effect": "Allow",
       "Action": "elasticloadbalancing:*",
       "Resource": "*",
       "Condition": { "StringEquals": { "aws:RequestedRegion": "eu-south-1" } }
     },
-    { "Sid": "S3IgnBuckets",
+    {
+      "Sid": "S3IgnBuckets",
       "Effect": "Allow",
       "Action": [
         "s3:CreateBucket",
-        "s3:PutBucketPolicy",
-        "s3:PutBucketPublicAccessBlock",
         "s3:DeleteBucket",
-        "s3:ListBucket",
         "s3:GetBucketLocation",
+        "s3:ListBucket",
+
+        "s3:PutBucketPolicy",
+        "s3:GetBucketPolicy",
+
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetBucketPublicAccessBlock",
+
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+
+        "s3:PutBucketAcl",
+        "s3:GetBucketAcl",
+
+        "s3:PutBucketOwnershipControls",
+        "s3:GetBucketOwnershipControls",
+
+        "s3:PutEncryptionConfiguration",
+        "s3:GetEncryptionConfiguration",
+
         "s3:PutObject",
         "s3:GetObject",
-        "s3:DeleteObject"
+        "s3:DeleteObject",
+        "s3:PutObjectAcl"
       ],
       "Resource": [
         "arn:aws:s3:::ocp-*ign-eu-south-1-*",
         "arn:aws:s3:::ocp-*ign-eu-south-1-*/*"
       ]
     },
-    { "Sid": "Route53ForUPI",
+    {
+      "Sid": "Route53ForUPI",
       "Effect": "Allow",
       "Action": [
         "route53:CreateHostedZone",
         "route53:DeleteHostedZone",
         "route53:ChangeResourceRecordSets",
+
         "route53:ListHostedZones",
         "route53:ListHostedZonesByName",
         "route53:GetHostedZone",
         "route53:ListResourceRecordSets",
         "route53:ListTagsForResource",
-        "route53:ChangeTagsForResource"
+        "route53:ChangeTagsForResource",
+
+        "route53:GetChange",
+        "route53:AssociateVPCWithHostedZone",
+        "route53:DisassociateVPCFromHostedZone"
       ],
       "Resource": "*"
     }
   ]
 }
+
