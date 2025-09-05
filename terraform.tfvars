@@ -14,6 +14,7 @@ clusters = {
   s0 = {
     vpc_cidr            = "10.38.0.0/16"
     public_subnet_cidrs = ["10.38.0.0/20","10.38.16.0/20","10.38.32.0/20"]
+    rhcos_ami_id        = "ami-0dc93570c4163743d"
     ign_bootstrap_path  = "~/ocp-ign/s1/bootstrap.ign"
     ign_master_path     = "~/ocp-ign/s1/master.ign"
     enabled             = true
