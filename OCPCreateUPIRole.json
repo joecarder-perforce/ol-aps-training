@@ -68,7 +68,7 @@
         "route53:GetDNSSEC"
       ],
       "Resource": [
-        "arn:aws:route53:::hostedzone/Z0687029QYO4XAR74LIZ"
+        "arn:aws:route53:::hostedzone/*"
       ]
     },
         {
