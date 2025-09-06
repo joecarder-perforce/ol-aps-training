@@ -59,6 +59,28 @@
       "Resource": "*"
     },
     {
+      "Sid": "Route53Read",
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetHostedZone",
+        "route53:ListResourceRecordSets",
+        "route53:ChangeResourceRecordSets",
+        "route53:GetDNSSEC"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/Z0687029QYO4XAR74LIZ"
+      ]
+    },
+        {
+      "Sid": "Route53List",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:ListHostedZonesByName"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "Route53ForUPI",
       "Effect": "Allow",
       "Action": [
@@ -77,6 +99,21 @@
       "Resource": "*"
     },
     {
+      "Sid": "Route53ZoneVpcAssoc",
+      "Effect": "Allow",
+      "Action": [
+        "route53:AssociateVPCWithHostedZone",
+        "route53:DisassociateVPCFromHostedZone"
+      ],
+      "Resource": "*"
+  },
+  {
+      "Sid": "S3ListBuckets",
+    "Effect": "Allow",
+    "Action": "s3:ListAllMyBuckets",
+    "Resource": "*"
+  },
+  {
       "Sid": "S3IgnBucketsAll",
       "Effect": "Allow",
       "Action": "s3:*",

@@ -149,7 +149,6 @@ resource "aws_s3_object" "bootstrap_ign" {
   key          = "bootstrap.ign"
   source       = var.ign_bootstrap_path
   content_type = "application/json"
-  acl          = "public-read"
   tags         = merge(local.tags_base, { Resource = "s3obj-ign", Role = "bootstrap" })
 }
 
@@ -158,7 +157,6 @@ resource "aws_s3_object" "master_ign" {
   key          = "master.ign"
   source       = var.ign_master_path
   content_type = "application/json"
-  acl          = "public-read"
   tags         = merge(local.tags_base, { Resource = "s3obj-ign", Role = "master" })
 }
 
