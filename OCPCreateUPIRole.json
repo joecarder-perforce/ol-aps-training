@@ -71,7 +71,7 @@
         "arn:aws:route53:::hostedzone/*"
       ]
     },
-        {
+    {
       "Sid": "Route53List",
       "Effect": "Allow",
       "Action": [
@@ -79,6 +79,18 @@
         "route53:ListHostedZonesByName"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "Route53ReadWrite",
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetHostedZone",
+        "route53:ListResourceRecordSets",
+        "route53:ChangeResourceRecordSets",
+        "route53:GetDNSSEC",
+        "route53:ListHostedZonesByName"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/*"
     },
     {
       "Sid": "Route53ForUPI",
