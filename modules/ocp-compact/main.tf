@@ -106,6 +106,17 @@ resource "aws_security_group_rule" "web_vpc" {
   security_group_id = aws_security_group.cluster.id
 }
 
+# etcd peer/client ports between masters
+resource "aws_security_group_rule" "master_etcd_peer" {
+  type              = "ingress"
+  description       = "etcd peer/client between masters"
+  from_port         = 2379
+  to_port           = 2380
+  protocol          = "tcp"
+  security_group_id = aws_security_group.cluster_nodes.id
+  source_security_group_id = aws_security_group.cluster_nodes.id
+}
+
 resource "aws_security_group_rule" "egress_all" {
   type              = "egress"
   from_port         = 0
@@ -298,12 +309,26 @@ resource "aws_lb_target_group_attachment" "mcs_attach" {
   port             = 22623
 }
 
+# Let masters fetch Ignition from bootstrap MCS during bootstrap phase
+resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
+  target_group_arn = aws_lb_target_group.mcs.arn
+  target_id        = aws_instance.bootstrap.id
+  port             = 22623
+}
+
 # ---------- DNS (Private) ----------
 resource "aws_route53_zone" "private" {
   name = local.zone_name
   vpc { vpc_id = aws_vpc.this.id }
   force_destroy = true
   tags          = merge(local.tags_base, { Resource = "r53-zone" })
+}
+
+resource "aws_route53_zone_association" "jump" {
+  count      = var.jump_vpc_id == "" || var.jump_vpc_id == null ? 0 : 1
+  zone_id    = aws_route53_zone.cluster_private.zone_id
+  vpc_id     = var.jump_vpc_id
+  vpc_region = var.region
 }
 
 resource "aws_route53_record" "api" {

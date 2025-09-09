@@ -1,24 +1,64 @@
-variable "region" { type = string }
-variable "base_domain" { type = string }
-variable "cluster_name" { type = string }
-variable "ssh_key_name" { type = string }
-variable "admin_cidr" { type = string }
+variable "region" { 
+  type = string 
+}
 
-variable "vpc_cidr" { type = string }
-variable "public_subnet_cidrs" { type = list(string) }
+variable "base_domain" { 
+  type = string 
+ }
 
-variable "ign_bootstrap_path" { type = string }
-variable "ign_master_path" { type = string }
+variable "cluster_name" { 
+  type = string 
+}
 
-variable "instance_type_master" { type = string }
-variable "instance_type_bootstrap" { type = string }
+variable "ssh_key_name" {
+  type = string 
+}
 
-variable "master_root_volume_size" { type = number }
-variable "bootstrap_root_volume_size" { type = number }
+variable "admin_cidr" { 
+  type = string
+ }
 
-variable "base_domain"      { type = string }
-variable "cluster"          { type = string }
-variable "jump_vpc_id"      { type = string, default = null }
+variable "jump_vpc_id" {
+  type    = string
+  default = null
+}
+
+variable "jump_cidr" {
+  type    = string
+  default = null
+}
+
+variable "vpc_cidr" {
+   type = string 
+}
+
+variable "public_subnet_cidrs" { 
+  type = list(string) 
+}
+
+variable "ign_bootstrap_path" { 
+  type = string 
+}
+
+variable "ign_master_path" { 
+  type = string 
+}
+
+variable "instance_type_master" { 
+  type = string 
+}
+
+variable "instance_type_bootstrap" {
+   type = string 
+  }
+
+variable "master_root_volume_size" { 
+  type = number 
+}
+
+variable "bootstrap_root_volume_size" { 
+  type = number 
+}
 
 variable "rhcos_ami_id" {
   type    = string

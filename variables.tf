@@ -29,6 +29,21 @@ variable "common_tags" {
   }
 }
 
+variable "cluster"     { 
+  type = string 
+}
+variable "base_domain" { 
+  type = string 
+}
+variable "jump_vpc_id" {
+  type    = string
+  default = null
+}
+variable "jump_cidr"   { 
+  type = string
+  default = null 
+} 
+
 # Map of clusters to create. Each entry points at its Ignition files & networking
 variable "clusters" {
   description = <<EOT
