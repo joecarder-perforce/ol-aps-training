@@ -32,9 +32,7 @@ variable "common_tags" {
 variable "cluster" {
   type = string
 }
-variable "base_domain" {
-  type = string
-}
+
 variable "jump_vpc_id" {
   type    = string
   default = null
