@@ -29,10 +29,6 @@ variable "common_tags" {
   }
 }
 
-variable "cluster" {
-  type = string
-}
-
 variable "jump_vpc_id" {
   type    = string
   default = null
