@@ -6,8 +6,9 @@ variable "base_domain" {
   type = string 
  }
 
-variable "cluster_name" { 
-  type = string 
+variable "cluster" {
+  description = "Short cluster slug used in names and DNS (e.g., s0)"
+  type        = string
 }
 
 variable "ssh_key_name" {
