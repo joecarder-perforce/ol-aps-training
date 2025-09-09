@@ -23,7 +23,7 @@ module "cluster" {
   admin_cidr   = var.admin_cidr
 
   # Per-cluster
-  cluster_name               = each.key
+  cluster                    = each.key
   vpc_cidr                   = each.value.vpc_cidr
   public_subnet_cidrs        = each.value.public_subnet_cidrs
   ign_bootstrap_path         = each.value.ign_bootstrap_path

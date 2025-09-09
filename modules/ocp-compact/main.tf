@@ -1,13 +1,13 @@
 locals {
-  zone_name = "${var.cluster_name}.${var.base_domain}"
+  zone_name = "${var.cluster}.${var.base_domain}"
 }
 
 # Ensure bucket names are globally unique by including account id
 data "aws_caller_identity" "this" {}
 
 locals {
-  bucket_name = "ocp-${var.cluster_name}-ign-${var.region}-${data.aws_caller_identity.this.account_id}"
-  tags_base   = merge(var.tags, { Name = var.cluster_name })
+  bucket_name = "ocp-${var.cluster}-ign-${var.region}-${data.aws_caller_identity.this.account_id}"
+  tags_base   = merge(var.tags, { Name = var.cluster })
 }
 
 # ---------- Networking ----------
@@ -55,7 +55,7 @@ resource "aws_route_table_association" "public_assoc" {
 
 # ---------- Security ----------
 resource "aws_security_group" "cluster" {
-  name        = "${var.cluster_name}-sg"
+  name        = "${var.cluster}-sg"
   description = "OCP compact SG"
   vpc_id      = aws_vpc.this.id
   tags        = merge(local.tags_base, { Resource = "sg" })
@@ -113,8 +113,8 @@ resource "aws_security_group_rule" "master_etcd_peer" {
   from_port         = 2379
   to_port           = 2380
   protocol          = "tcp"
-  security_group_id = aws_security_group.cluster_nodes.id
-  source_security_group_id = aws_security_group.cluster_nodes.id
+  security_group_id = aws_security_group.cluster.id
+  source_security_group_id = aws_security_group.cluster.id
 }
 
 resource "aws_security_group_rule" "egress_all" {
@@ -199,7 +199,7 @@ locals {
 
 # ---------- Load Balancing (API + MCS) ----------
 resource "aws_lb" "api_mcs" {
-  name               = "${var.cluster_name}-nlb"
+  name               = "${var.cluster}-nlb"
   internal           = true
   load_balancer_type = "network"
   subnets            = [for s in aws_subnet.public : s.id]
@@ -207,7 +207,7 @@ resource "aws_lb" "api_mcs" {
 }
 
 resource "aws_lb_target_group" "api" {
-  name        = "${var.cluster_name}-tg-api"
+  name        = "${var.cluster}-tg-api"
   port        = 6443
   protocol    = "TCP"
   vpc_id      = aws_vpc.this.id
@@ -220,7 +220,7 @@ resource "aws_lb_target_group" "api" {
 }
 
 resource "aws_lb_target_group" "mcs" {
-  name        = "${var.cluster_name}-tg-mcs"
+  name        = "${var.cluster}-tg-mcs"
   port        = 22623
   protocol    = "TCP"
   vpc_id      = aws_vpc.this.id
