@@ -16,6 +16,10 @@ variable "instance_type_bootstrap" { type = string }
 variable "master_root_volume_size" { type = number }
 variable "bootstrap_root_volume_size" { type = number }
 
+variable "base_domain"      { type = string }
+variable "cluster"          { type = string }
+variable "jump_vpc_id"      { type = string, default = null }
+
 variable "rhcos_ami_id" {
   type    = string
   default = ""
