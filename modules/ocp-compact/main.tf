@@ -108,12 +108,12 @@ resource "aws_security_group_rule" "web_vpc" {
 
 # etcd peer/client ports between masters
 resource "aws_security_group_rule" "master_etcd_peer" {
-  type              = "ingress"
-  description       = "etcd peer/client between masters"
-  from_port         = 2379
-  to_port           = 2380
-  protocol          = "tcp"
-  security_group_id = aws_security_group.cluster.id
+  type                     = "ingress"
+  description              = "etcd peer/client between masters"
+  from_port                = 2379
+  to_port                  = 2380
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.cluster.id
   source_security_group_id = aws_security_group.cluster.id
 }
 
@@ -355,7 +355,7 @@ resource "aws_route53_record" "api_int" {
 
 # Optional: create *.apps once you know the router LB DNS name
 resource "aws_route53_record" "apps_wildcard" {
-  count = var.apps_lb_dns_name != null && var.apps_lb_dns_name != "" ? 1 : 0
+  count   = var.apps_lb_dns_name != null && var.apps_lb_dns_name != "" ? 1 : 0
   zone_id = aws_route53_zone.private.zone_id
   name    = "*.apps.${local.zone_name}"
   type    = "CNAME"
