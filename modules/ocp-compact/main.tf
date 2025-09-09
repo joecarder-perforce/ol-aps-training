@@ -326,7 +326,7 @@ resource "aws_route53_zone" "private" {
 
 resource "aws_route53_zone_association" "jump" {
   count      = var.jump_vpc_id == "" || var.jump_vpc_id == null ? 0 : 1
-  zone_id    = aws_route53_zone.cluster_private.zone_id
+  zone_id    = aws_route53_zone.private.zone_id
   vpc_id     = var.jump_vpc_id
   vpc_region = var.region
 }
