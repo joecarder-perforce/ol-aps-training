@@ -386,3 +386,48 @@ resource "aws_route53_record" "apps_wildcard" {
   ttl     = 60
   records = [var.apps_lb_dns_name]
 }
+# ---------- Jump peering & routes ----------
+
+# Discover the jump VPC to get its CIDR
+data "aws_vpc" "jump" {
+  count = var.jump_vpc_id != null && var.jump_vpc_id != "" ? 1 : 0
+  id    = var.jump_vpc_id
+}
+
+# Peering between the cluster VPC and the shared jump VPC
+resource "aws_vpc_peering_connection" "jump" {
+  count       = length(data.aws_vpc.jump) > 0 ? 1 : 0
+  vpc_id      = aws_vpc.this.id           # cluster VPC
+  peer_vpc_id = var.jump_vpc_id           # jump VPC
+  auto_accept = true                      # same account/region
+  tags        = merge(local.tags_base, { Resource = "pcx", Purpose = "jump-peering" })
+}
+
+# Route in the cluster VPC to reach the jump VPC via the peering
+resource "aws_route" "cluster_to_jump" {
+  count                     = length(data.aws_vpc.jump) > 0 ? 1 : 0
+  route_table_id            = aws_route_table.public.id
+  destination_cidr_block    = data.aws_vpc.jump[0].cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.jump[0].id
+}
+
+# Enumerate ALL route tables in the jump VPC so we can add return routes
+data "aws_route_tables" "jump" {
+  count  = length(data.aws_vpc.jump) > 0 ? 1 : 0
+  vpc_id = var.jump_vpc_id
+}
+
+# Collect jump VPC RT IDs into a list (empty if the data source didn't run)
+locals {
+  jump_route_table_ids = length(data.aws_route_tables.jump) > 0 ? data.aws_route_tables.jump[0].ids : []
+}
+
+# One return route in EVERY jump VPC route table, back to the cluster CIDR
+resource "aws_route" "jump_to_cluster" {
+  # Create one aws_route per RT id
+  for_each = toset(local.jump_route_table_ids)
+
+  route_table_id            = each.value
+  destination_cidr_block    = var.vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.jump[0].id
+}
