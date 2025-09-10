@@ -106,6 +106,27 @@ resource "aws_security_group_rule" "web_vpc" {
   security_group_id = aws_security_group.cluster.id
 }
 
+# API from jump/admin
+resource "aws_security_group_rule" "api_admin" {
+  type              = "ingress"
+  description       = "API from admin CIDR (jump)"
+  from_port         = 6443
+  to_port           = 6443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.cluster.id
+  cidr_blocks       = [var.admin_cidr]
+}
+# MCS from jump/admin (needed during bootstrap)
+resource "aws_security_group_rule" "mcs_admin" {
+  type              = "ingress"
+  description       = "MCS from admin CIDR (jump)"
+  from_port         = 22623
+  to_port           = 22623
+  protocol          = "tcp"
+  security_group_id = aws_security_group.cluster.id
+  cidr_blocks       = [var.admin_cidr]
+}
+
 # etcd peer/client ports between masters
 resource "aws_security_group_rule" "master_etcd_peer" {
   type                     = "ingress"
