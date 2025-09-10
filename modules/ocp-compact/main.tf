@@ -320,6 +320,9 @@ resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
 resource "aws_route53_zone" "private" {
   name = local.zone_name
   vpc { vpc_id = aws_vpc.this.id }
+  lifecycle { 
+    ignore_changes = [vpc] # Avoid Route53 association churn; manage extra VPCs via aws_route53_zone_association
+  }
   force_destroy = true
   tags          = merge(local.tags_base, { Resource = "r53-zone" })
 }
