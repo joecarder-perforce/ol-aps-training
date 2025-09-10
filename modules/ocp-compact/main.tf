@@ -220,11 +220,17 @@ locals {
 
 # ---------- Load Balancing (API + MCS) ----------
 resource "aws_lb" "api_mcs" {
-  name               = "${var.cluster}-nlb"
-  internal           = true
-  load_balancer_type = "network"
-  subnets            = [for s in aws_subnet.public : s.id]
-  tags               = merge(local.tags_base, { Resource = "nlb" })
+  name                             = "${var.cluster}-nlb"
+  internal                         = true
+  load_balancer_type               = "network"
+  enable_cross_zone_load_balancing = true
+  subnets                          = [for s in aws_subnet.public : s.id]
+  tags                             = merge(local.tags_base, { Resource = "nlb" })
+}
+resource "aws_lb_target_group_attachment" "api_attach_bootstrap" {
+  target_group_arn = aws_lb_target_group.api.arn
+  target_id        = aws_instance.bootstrap.id
+  port             = 6443
 }
 
 resource "aws_lb_target_group" "api" {
@@ -335,6 +341,13 @@ resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
   target_group_arn = aws_lb_target_group.mcs.arn
   target_id        = aws_instance.bootstrap.id
   port             = 22623
+}
+
+# Let bootstrap hit apis
+resource "aws_lb_target_group_attachment" "api_attach_bootstrap" {
+  target_group_arn = aws_lb_target_group.api.arn
+  target_id        = aws_instance.bootstrap.id
+  port             = 6443
 }
 
 # ---------- DNS (Private) ----------
