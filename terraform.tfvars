@@ -3,6 +3,7 @@ region       = "eu-south-1"
 base_domain  = "trng.lab"
 ssh_key_name = "ocp-class"
 admin_cidr   = "172.31.21.127/32" # jump box private IP/32
+jump_vpc_id  = "vpc-0b772ffc388747012"
 
 # Global tags (provider default_tags); 'customer=aps' is included by default.
 common_tags = {
