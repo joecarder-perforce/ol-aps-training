@@ -343,13 +343,6 @@ resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
   port             = 22623
 }
 
-# Let bootstrap hit apis
-resource "aws_lb_target_group_attachment" "api_attach_bootstrap" {
-  target_group_arn = aws_lb_target_group.api.arn
-  target_id        = aws_instance.bootstrap.id
-  port             = 6443
-}
-
 # ---------- DNS (Private) ----------
 resource "aws_route53_zone" "private" {
   name = local.zone_name
