@@ -107,6 +107,7 @@
         "route53:ListResourceRecordSets",
         "route53:ListTagsForResource",
         "route53:UpdateHostedZoneComment"
+        "route53:ListHostedZonesByVPC"
       ],
       "Resource": "*"
     },
