@@ -397,9 +397,9 @@ data "aws_vpc" "jump" {
 # Peering between the cluster VPC and the shared jump VPC
 resource "aws_vpc_peering_connection" "jump" {
   count       = length(data.aws_vpc.jump) > 0 ? 1 : 0
-  vpc_id      = aws_vpc.this.id           # cluster VPC
-  peer_vpc_id = var.jump_vpc_id           # jump VPC
-  auto_accept = true                      # same account/region
+  vpc_id      = aws_vpc.this.id # cluster VPC
+  peer_vpc_id = var.jump_vpc_id # jump VPC
+  auto_accept = true            # same account/region
   tags        = merge(local.tags_base, { Resource = "pcx", Purpose = "jump-peering" })
 }
 
