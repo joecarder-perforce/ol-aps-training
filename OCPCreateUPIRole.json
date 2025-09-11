@@ -47,6 +47,7 @@
         "iam:ListInstanceProfilesForRole",
         "iam:ListInstanceProfiles",
         "iam:ListRoles",
+        "iam:ListRolePolicies",
         "iam:ListUsers",
         "iam:PassRole",
         "iam:PutRolePolicy",
