@@ -42,6 +42,31 @@ data "aws_iam_policy_document" "ccm_readonly" {
   }
 }
 
+# --- Route53 perms for ingress-operator DNS management (zone-scoped) ---
+# If you prefer to keep it generic first time, set the resource to ["*"]
+# and tighten to the hosted zone ARN later.
+data "aws_iam_policy_document" "master_route53" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:ChangeResourceRecordSets",
+      "route53:ListHostedZones",
+      "route53:ListHostedZonesByName",
+      "route53:ListHostedZonesByVPC",
+      "route53:ListResourceRecordSets",
+      "route53:GetHostedZone",
+      "route53:GetChange",
+    ]
+    resources = ["*"] # or ["arn:aws:route53:::hostedzone/${var.apps_private_zone_id}"]
+  }
+}
+
+resource "aws_iam_role_policy" "master_route53" {
+  name   = "${var.cluster}-master-route53"
+  role   = aws_iam_role.master.id
+  policy = data.aws_iam_policy_document.master_route53.json
+}
+
 # --- Full ELB (classic) + ELBv2 set for Service type=LoadBalancer from Ingress ---
 data "aws_iam_policy_document" "master_elb" {
   statement {
