@@ -138,17 +138,92 @@ resource "aws_iam_instance_profile" "master" {
   tags = merge(local.tags_base, { Resource = "iam-instance-profile-master" })
 }
 
-# --- Attach policies to the role ---
+# --- Attach policies to the role (existing, unchanged) ---
 resource "aws_iam_role_policy" "master_readonly" {
   name   = "${var.cluster}-master-ccm-readonly"
   role   = aws_iam_role.master.id
   policy = data.aws_iam_policy_document.ccm_readonly.json
 }
 
-# IMPORTANT: keep the resource name "master_elbv2" and the IAM policy name "${var.cluster}-master-elbv2"
-# so OpenTofu updates in-place (no destroy) and remains a superset of previous permissions.
-resource "aws_iam_role_policy" "master_elbv2" {
-  name   = "${var.cluster}-master-elbv2"
+resource "aws_iam_role_policy" "master_elb" {
+  name   = "${var.cluster}-master-elb"
   role   = aws_iam_role.master.id
   policy = data.aws_iam_policy_document.master_elb.json
+}
+
+# --- Extra ELB permissions (additive-only; keeps existing policies untouched) ---
+data "aws_iam_policy_document" "master_elb_extra" {
+  statement {
+    sid    = "ELBAllExtra"
+    effect = "Allow"
+    actions = [
+      # Classic ELB lifecycle
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeLoadBalancerAttributes",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:DescribeListeners",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:RemoveTags",
+      "elasticloadbalancing:DescribeTags",
+
+      # Classic ELB health checks & registration
+      "elasticloadbalancing:ConfigureHealthCheck",
+      "elasticloadbalancing:DescribeInstanceHealth",
+      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+
+      # Classic ELB listeners & backend policies
+      "elasticloadbalancing:CreateLoadBalancerListeners",
+      "elasticloadbalancing:DeleteLoadBalancerListeners",
+      "elasticloadbalancing:CreateLoadBalancerPolicy",
+      "elasticloadbalancing:DeleteLoadBalancerPolicy",
+      "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+      "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+
+      # ELBv2 (NLB/ALB) lifecycle
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeLoadBalancerAttributes",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:SetIpAddressType",
+      "elasticloadbalancing:SetSubnets",
+      "elasticloadbalancing:CreateListener",
+      "elasticloadbalancing:DeleteListener",
+      "elasticloadbalancing:DescribeListeners",
+
+      # ELBv2 target groups
+      "elasticloadbalancing:CreateTargetGroup",
+      "elasticloadbalancing:DeleteTargetGroup",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetGroupAttributes",
+      "elasticloadbalancing:ModifyTargetGroup",
+      "elasticloadbalancing:ModifyTargetGroupAttributes",
+      "elasticloadbalancing:RegisterTargets",
+      "elasticloadbalancing:DeregisterTargets",
+      "elasticloadbalancing:DescribeTargetHealth",
+    ]
+    resources = ["*"]
+  }
+
+  # Service-linked role for ELB (harmless if it already exists)
+  statement {
+    sid       = "ELBServiceLinkedRoleExtra"
+    effect    = "Allow"
+    actions   = ["iam:CreateServiceLinkedRole"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values   = ["elasticloadbalancing.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "master_elb_extra" {
+  name   = "${var.cluster}-master-elb-extra"
+  role   = aws_iam_role.master.id
+  policy = data.aws_iam_policy_document.master_elb_extra.json
 }
