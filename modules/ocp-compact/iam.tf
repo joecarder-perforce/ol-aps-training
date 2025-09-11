@@ -60,6 +60,10 @@ data "aws_iam_policy_document" "ccm_elbv2" {
       "elasticloadbalancing:DescribeLoadBalancerAttributes",
       "elasticloadbalancing:DescribeTargetGroupAttributes",
       "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:DeleteLoadBalancerPolicy",
+      "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+      "elasticloadbalancing:CreateLoadBalancerListeners",
+      "elasticloadbalancing:DeleteLoadBalancerListeners",
     ]
     resources = ["*"]
   }
