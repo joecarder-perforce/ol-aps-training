@@ -145,8 +145,10 @@ resource "aws_iam_role_policy" "master_readonly" {
   policy = data.aws_iam_policy_document.ccm_readonly.json
 }
 
-resource "aws_iam_role_policy" "master_elb" {
-  name   = "${var.cluster}-master-elb"
+# IMPORTANT: keep the resource name "master_elbv2" and the IAM policy name "${var.cluster}-master-elbv2"
+# so OpenTofu updates in-place (no destroy) and remains a superset of previous permissions.
+resource "aws_iam_role_policy" "master_elbv2" {
+  name   = "${var.cluster}-master-elbv2"
   role   = aws_iam_role.master.id
   policy = data.aws_iam_policy_document.master_elb.json
 }
