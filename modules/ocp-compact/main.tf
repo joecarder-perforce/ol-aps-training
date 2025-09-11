@@ -317,7 +317,10 @@ resource "aws_instance" "master" {
     iops        = 3000
     throughput  = 125
   }
-
+  depends_on = [
+    aws_instance.bootstrap,
+    aws_lb_target_group_attachment.api_attach_bootstrap
+  ]
   tags = merge(local.tags_base, { Resource = "ec2", Role = "master", Index = tostring(count.index + 1) })
 }
 
