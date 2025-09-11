@@ -64,6 +64,7 @@ data "aws_iam_policy_document" "ccm_elbv2" {
       "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
       "elasticloadbalancing:CreateLoadBalancerListeners",
       "elasticloadbalancing:DeleteLoadBalancerListeners",
+      "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
     ]
     resources = ["*"]
   }
