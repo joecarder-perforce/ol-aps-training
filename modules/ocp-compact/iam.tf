@@ -44,6 +44,7 @@ data "aws_iam_policy_document" "ccm_elbv2" {
       "elasticloadbalancing:RegisterTargets",
       "elasticloadbalancing:DeregisterTargets",
       "elasticloadbalancing:CreateListener",
+      "elasticloadbalancing:CreateLoadBalancerPolicy",
       "elasticloadbalancing:DeleteListener",
       "elasticloadbalancing:ModifyLoadBalancerAttributes",
       "elasticloadbalancing:ModifyTargetGroup",
