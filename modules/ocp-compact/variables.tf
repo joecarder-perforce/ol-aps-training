@@ -53,6 +53,19 @@ variable "instance_type_bootstrap" {
   type = string
 }
 
+variable "metadata_json_path" {
+  description = "Path to OpenShift metadata.json. If present, infraID is read from it."
+  type        = string
+  default     = ""
+}
+
+variable "infra_id" {
+  description = "OpenShift infrastructure ID from metadata.json (e.g., s0-abcde). If empty, falls back to var.cluster."
+  type        = string
+  default     = ""
+}
+
+
 variable "master_root_volume_size" {
   type = number
 }

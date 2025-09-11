@@ -32,6 +32,7 @@
       "Effect": "Allow",
       "Action": [
         "iam:AddRoleToInstanceProfile",
+        "iam:AttachRolePolicy",
         "iam:CreateInstanceProfile",
         "iam:CreateRole",
         "iam:DeleteInstanceProfile",
@@ -41,7 +42,10 @@
         "iam:GetRole",
         "iam:GetRolePolicy",
         "iam:GetUser",
+        "iam:GetInstanceProfile",
+        "iam:ListAttachedRolePolicies",
         "iam:ListInstanceProfilesForRole",
+        "iam:ListInstanceProfiles",
         "iam:ListRoles",
         "iam:ListUsers",
         "iam:PassRole",

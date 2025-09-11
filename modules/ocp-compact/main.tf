@@ -10,6 +10,24 @@ locals {
   tags_base   = merge(var.tags, { Name = var.cluster })
 }
 
+# Grant cluster tag for infraID from OpenShift installer metadata.json
+locals {
+  # Path is provided via TF_VAR_metadata_json_path (e.g., "$WORKDIR/metadata.json")
+  metadata_json_path = var.metadata_json_path
+
+  # Safely read metadata.json only when a path is set AND the file exists
+  metadata_json = (
+    local.metadata_json_path != "" && fileexists(local.metadata_json_path)
+  ) ? jsondecode(file(local.metadata_json_path)) : {}
+
+  # Prefer infraID from file; fall back to var.infra_id, then var.cluster
+  infra_id_from_file = try(local.metadata_json.infraID, "")
+  infra_id_effective = length(local.infra_id_from_file) > 0 ? local.infra_id_from_file : (var.infra_id != "" ? var.infra_id : var.cluster)
+
+  # Final ClusterID tag key
+  cluster_tag_key = "kubernetes.io/cluster/${local.infra_id_effective}"
+}
+
 # ---------- Networking ----------
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
@@ -308,8 +326,13 @@ resource "aws_instance" "master" {
   vpc_security_group_ids      = [aws_security_group.cluster.id]
   associate_public_ip_address = true
   key_name                    = var.ssh_key_name
+
+  # Boot/identity
+  iam_instance_profile = aws_iam_instance_profile.master.name
+  user_data_base64     = local.master_user_data_b64
+
+  # Perf
   credit_specification { cpu_credits = "unlimited" }
-  user_data_base64 = local.master_user_data_b64
 
   root_block_device {
     volume_size = var.master_root_volume_size
@@ -321,7 +344,16 @@ resource "aws_instance" "master" {
     aws_instance.bootstrap,
     aws_lb_target_group_attachment.api_attach_bootstrap
   ]
-  tags = merge(local.tags_base, { Resource = "ec2", Role = "master", Index = tostring(count.index + 1) })
+  tags = merge(
+    local.tags_base,
+    {
+      Resource                   = "ec2",
+      Role                       = "master",
+      Index                      = tostring(count.index + 1)
+      "${local.cluster_tag_key}" = "owned"
+    }
+  )
+
 }
 
 # Attach masters to NLB target groups
