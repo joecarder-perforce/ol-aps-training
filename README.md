@@ -32,10 +32,10 @@ openshift-install create install-config --dir "$WORKDIR"
   d) Base Domain
   Enter: trng.lab
   e) Cluster Name
-Enter: \s#` — the last digit of your APS student account (e.g., `aps-student-00` ⇒ `s0`)`
+  Enter: s# — the last digit of your APS student account (e.g., aps-student-00 ⇒ s0)
   f) Pull Secret
   Paste the pull secret from ~/pull-secret (entire file contents on a single line).
-
+  
 # 2) Render ignition
 openshift-install create ignition-configs --dir "$WORKDIR"
 
