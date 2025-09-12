@@ -378,20 +378,11 @@ resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
   port             = 22623
 }
 
-# ---------- DNS (Private) ----------
-resource "aws_route53_zone" "private" {
-  name = local.zone_name
-  vpc { vpc_id = aws_vpc.this.id }
-  lifecycle {
-    ignore_changes = [vpc] # Avoid Route53 association churn; manage extra VPCs via aws_route53_zone_association
-  }
-  force_destroy = true
-  tags          = merge(local.tags_base, { Resource = "r53-zone" })
-}
+
 
 resource "aws_route53_zone_association" "jump" {
-  count      = var.jump_vpc_id == "" || var.jump_vpc_id == null ? 0 : 1
-  zone_id    = aws_route53_zone.private.zone_id
+  count      = var.jump_vpc_id != "" ? 1 : 0
+  zone_id    = var.private_zone_id
   vpc_id     = var.jump_vpc_id
   vpc_region = var.region
 }
