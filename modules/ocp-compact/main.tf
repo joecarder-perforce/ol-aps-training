@@ -16,6 +16,7 @@ locals {
   metadata_json_path = var.metadata_json_path
   metadata_json      = try(jsondecode(file(local.metadata_json_path)), jsondecode("{}"))
   infra_id_effective = coalesce(try(local.metadata_json.infraID, null), var.infra_id, var.cluster)
+  cluster_tag_key    = "kubernetes.io/cluster/${local.infra_id_effective}"
 }
 
 
