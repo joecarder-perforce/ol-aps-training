@@ -66,7 +66,7 @@ variable "infra_id" {
 }
 
 variable "private_zone_id" {
-  description = "Route53 private hosted zone ID for ${var.cluster}.${var.base_domain} (no /hostedzone/ prefix)."
+  description = "Route53 private hosted zone ID for (no /hostedzone/ prefix)."
   type        = string
 }
 
