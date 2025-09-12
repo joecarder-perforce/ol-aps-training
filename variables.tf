@@ -65,6 +65,7 @@ EOT
     public_subnet_cidrs        = list(string)
     ign_bootstrap_path         = string
     ign_master_path            = string
+    metadata_json_path         = optional(string)
     instance_type_master       = optional(string)
     instance_type_bootstrap    = optional(string)
     master_root_volume_size    = optional(number)

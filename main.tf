@@ -26,7 +26,7 @@ module "cluster" {
   cluster                    = each.key
   vpc_cidr                   = each.value.vpc_cidr
   public_subnet_cidrs        = each.value.public_subnet_cidrs
-  metadata_json_path         = each.value.metadata_json_path
+  metadata_json_path         = lookup(each.value, "metadata_json_path", "")
   ign_bootstrap_path         = each.value.ign_bootstrap_path
   ign_master_path            = each.value.ign_master_path
   instance_type_master       = coalesce(try(each.value.instance_type_master, null), local.defaults.instance_type_master)
