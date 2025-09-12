@@ -23,7 +23,16 @@ This runbook walks you end‑to‑end through bringing up a compact (3‑node) O
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"
 openshift-install create install-config --dir "$WORKDIR"
-
+  # a) SSH Public Key
+  select: /home/aps-student-00/.ssh/ocp-class.pub 
+  # b) Platform
+  select: aws
+  # c)
+  select: eu-south-1
+  # d) Base Domain
+  select: trng.lab
+  # e) Cluster Name
+  enter:s\# - this is the last digit in you aps student account name ie: aps-studenet-00 would s0  
 # 2) Render ignition
 openshift-install create ignition-configs --dir "$WORKDIR"
 
