@@ -35,7 +35,7 @@ module "cluster" {
   rhcos_ami_id               = coalesce(try(each.value.rhcos_ami_id, null), local.defaults.rhcos_ami_id)
   apps_lb_dns_name           = lookup(each.value, "apps_lb_dns_name", "")
   jump_vpc_id                = var.jump_vpc_id
-  private_zone_id            = data.aws_route53_zone.private[each.key].zone_id
+  private_zone_id            = data.aws_route53_zone.base_private.zone_id   
 
   # tags (merge global + per-cluster)
   tags = merge(var.common_tags, try(each.value.extra_tags, {}), { Cluster = each.key })

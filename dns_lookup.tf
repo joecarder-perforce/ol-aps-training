@@ -1,6 +1,5 @@
-# root/dns_lookup.tf
+# Look up the existing *base* private zone (e.g., trng.lab.)
 data "aws_route53_zone" "private" {
-  for_each     = local.active_clusters
-  name         = "${each.key}.${var.base_domain}."
+  name         = "${var.base_domain}."
   private_zone = true
 }
