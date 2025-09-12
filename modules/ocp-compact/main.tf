@@ -388,7 +388,7 @@ resource "aws_route53_zone_association" "jump" {
 }
 
 resource "aws_route53_record" "api" {
-  zone_id = aws_route53_zone.private.zone_id
+  zone_id = var.private_zone_id
   name    = "api.${local.zone_name}"
   type    = "A"
   alias {
@@ -399,7 +399,7 @@ resource "aws_route53_record" "api" {
 }
 
 resource "aws_route53_record" "api_int" {
-  zone_id = aws_route53_zone.private.zone_id
+  zone_id = var.private_zone_id
   name    = "api-int.${local.zone_name}"
   type    = "A"
   alias {
@@ -412,7 +412,7 @@ resource "aws_route53_record" "api_int" {
 # Optional: create *.apps once you know the router LB DNS name
 resource "aws_route53_record" "apps_wildcard" {
   count   = var.apps_lb_dns_name != null && var.apps_lb_dns_name != "" ? 1 : 0
-  zone_id = aws_route53_zone.private.zone_id
+  zone_id = var.private_zone_id
   name    = "*.apps.${local.zone_name}"
   type    = "CNAME"
   ttl     = 60
