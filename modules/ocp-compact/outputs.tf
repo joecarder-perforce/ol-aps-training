@@ -7,7 +7,7 @@ output "nlb_dns" {
 }
 
 output "private_zone_id" {
-  value = aws_route53_zone.private.zone_id
+  value = var.private_zone_id
 }
 
 output "private_zone_name" {
