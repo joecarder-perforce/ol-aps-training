@@ -378,12 +378,9 @@ resource "aws_lb_target_group_attachment" "mcs_attach_bootstrap" {
   port             = 22623
 }
 
-
-
-resource "aws_route53_zone_association" "jump" {
-  count      = var.jump_vpc_id != "" ? 1 : 0
+resource "aws_route53_zone_association" "cluster" {
   zone_id    = var.private_zone_id
-  vpc_id     = var.jump_vpc_id
+  vpc_id     = aws_vpc.this.id
   vpc_region = var.region
 }
 
