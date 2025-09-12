@@ -10,23 +10,14 @@ locals {
   tags_base   = merge(var.tags, { Name = var.cluster })
 }
 
+
 # Grant cluster tag for infraID from OpenShift installer metadata.json
 locals {
-  # Path is provided via TF_VAR_metadata_json_path (e.g., "$WORKDIR/metadata.json")
   metadata_json_path = var.metadata_json_path
-
-  # Safely read metadata.json only when a path is set AND the file exists
-  metadata_json = (
-    local.metadata_json_path != "" && fileexists(local.metadata_json_path)
-  ) ? jsondecode(file(local.metadata_json_path)) : {}
-
-  # Prefer infraID from file; fall back to var.infra_id, then var.cluster
-  infra_id_from_file = try(local.metadata_json.infraID, "")
-  infra_id_effective = length(local.infra_id_from_file) > 0 ? local.infra_id_from_file : (var.infra_id != "" ? var.infra_id : var.cluster)
-
-  # Final ClusterID tag key
-  cluster_tag_key = "kubernetes.io/cluster/${local.infra_id_effective}"
+  metadata_json      = try(jsondecode(file(local.metadata_json_path)), jsondecode("{}"))
+  infra_id_effective = coalesce(try(local.metadata_json.infraID, null), var.infra_id, var.cluster)
 }
+
 
 # ---------- Networking ----------
 resource "aws_vpc" "this" {
