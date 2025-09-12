@@ -19,6 +19,7 @@ clusters = {
     rhcos_ami_id        = "ami-0dc93570c4163743d"
     ign_bootstrap_path  = "/home/aps-student-00/ocp-ign/s0/bootstrap.ign"
     ign_master_path     = "/home/aps-student-00/ocp-ign/s0/master.ign"
+    metadata_json_path  = "/home/aps-student-00/ocp-ign/s0/metadata.json"
     enabled             = true
     extra_tags          = { Owner = "aps-student-00" }
   }
