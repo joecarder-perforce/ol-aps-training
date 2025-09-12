@@ -65,6 +65,10 @@ variable "infra_id" {
   default     = ""
 }
 
+variable "private_zone_id" {
+  description = "Route53 private hosted zone ID for ${var.cluster}.${var.base_domain} (no /hostedzone/ prefix)."
+  type        = string
+}
 
 variable "master_root_volume_size" {
   type = number
