@@ -12,6 +12,23 @@ locals {
   }
 }
 
+## Current AWS region (used by zone association)
+data "aws_region" "current" {}
+
+## Discover the cluster VPC by tag (Cluster=<clusterKey>)
+data "aws_vpc" "cluster" {
+  for_each = local.active_clusters
+  filter {
+    name   = "tag:Cluster"
+    values = [each.key]
+  }
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+}
+
+
 
 resource "aws_route53_zone" "private" {
   for_each = local.active_clusters
@@ -36,3 +53,10 @@ resource "aws_route53_zone" "private" {
   )
 }
 
+## Ensure the PHZ is associated with the **cluster VPC** (not just the jump VPC)
+resource "aws_route53_zone_association" "cluster_vpc" {
+  for_each   = local.active_clusters
+  zone_id    = aws_route53_zone.private[each.key].zone_id
+  vpc_id     = data.aws_vpc.cluster[each.key].id
+  vpc_region = data.aws_region.current.name
+}

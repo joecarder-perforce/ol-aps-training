@@ -1,5 +1,7 @@
-# Use the existing metadata_json_path to derive the installer WORKDIR
+# Minimal, correct day-1 manifest to force CCO Passthrough on OCP 4.19+
+
 locals {
+  # Use the installer metadata.json path you already pass to the module
   workdir = dirname(var.metadata_json_path)
 }
 
@@ -11,18 +13,16 @@ resource "null_resource" "ensure_manifests_dir" {
   }
 }
 
-# --- CCO Passthrough so operators use node IAM to manage Route53 ---
-resource "local_file" "cco_passthrough" {
-  filename = "${local.workdir}/manifests/00-cco-passthrough.yaml"
+# Authoritative switch: set CloudCredential CR to Passthrough
+resource "local_file" "cco_passthrough_cr" {
+  filename = "${local.workdir}/manifests/00-cco-credentials-mode.yaml"
   content  = <<YAML
-apiVersion: v1
-kind: ConfigMap
+apiVersion: operator.openshift.io/v1
+kind: CloudCredential
 metadata:
-  name: cloud-credential-operator-config
-  namespace: openshift-cloud-credential-operator
-data:
-  mode: Passthrough
+  name: cluster
+spec:
+  credentialsMode: Passthrough
 YAML
-
   depends_on = [null_resource.ensure_manifests_dir]
 }
