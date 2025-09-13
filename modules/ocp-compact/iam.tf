@@ -29,6 +29,9 @@ data "aws_iam_policy_document" "ccm_readonly" {
       "ec2:DescribeSubnets",
       "ec2:DescribeTags",
       "ec2:DescribeVpcs",
+      "ec2:DescribeAddresses",
+      "ec2:DescribeNatGateways",
+      "ec2:DescribeNetworkInterfaces",
 
       # SG + Tag management sometimes used with LB wiring
       "ec2:CreateSecurityGroup",
@@ -223,6 +226,7 @@ data "aws_iam_policy_document" "master_elb_extra" {
       "elasticloadbalancing:SetSubnets",
       "elasticloadbalancing:CreateListener",
       "elasticloadbalancing:DeleteListener",
+      "elasticloadbalancing:ModifyListener",
       "elasticloadbalancing:DescribeListeners",
 
       # ELBv2 target groups
@@ -257,4 +261,57 @@ resource "aws_iam_role_policy" "master_elb_extra" {
   name   = "${var.cluster}-master-elb-extra"
   role   = aws_iam_role.master.id
   policy = data.aws_iam_policy_document.master_elb_extra.json
+}
+
+# --- S3 for image-registry ---
+data "aws_iam_policy_document" "master_s3_registry" {
+  # Bucket-level admin
+  statement {
+    sid    = "S3BucketAdmin"
+    effect = "Allow"
+    actions = [
+      "s3:CreateBucket",
+      "s3:DeleteBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
+      "s3:GetBucketTagging",
+      "s3:PutBucketTagging",
+      "s3:GetBucketVersioning",
+      "s3:PutBucketVersioning",
+      "s3:GetBucketEncryption",
+      "s3:PutBucketEncryption",
+      "s3:GetLifecycleConfiguration",
+      "s3:PutLifecycleConfiguration",
+      "s3:GetBucketOwnershipControls",
+      "s3:PutBucketOwnershipControls",
+      "s3:GetPublicAccessBlock",
+      "s3:PutPublicAccessBlock",
+      "s3:ListAllMyBuckets",
+      "s3:ListBucket"
+    ]
+    resources = ["*"]
+  }
+
+  # Object-level RW
+  statement {
+    sid    = "S3ObjectRW"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
+      "s3:AbortMultipartUpload",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListMultipartUploadParts"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "master_s3_registry" {
+  name   = "${var.cluster}-master-s3-registry"
+  role   = aws_iam_role.master.id
+  policy = data.aws_iam_policy_document.master_s3_registry.json
 }
