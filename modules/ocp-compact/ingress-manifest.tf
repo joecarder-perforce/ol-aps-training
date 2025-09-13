@@ -27,22 +27,7 @@ YAML
   depends_on = [null_resource.ensure_manifests_dir]
 }
 
-# --- DNS cluster CR: bind to existing PRIVATE hosted zone (short id, no /hostedzone/) ---
-resource "local_file" "dns_private_zone" {
-  filename = "${local.workdir}/manifests/zz-01-dns-cluster.yaml"
-  content  = <<YAML
-apiVersion: config.openshift.io/v1
-kind: DNS
-metadata:
-  name: cluster
-spec:
-  privateZone:
-    id: ${var.private_zone_id}
-  publicZone: null
-YAML
 
-  depends_on = [null_resource.ensure_manifests_dir]
-}
 
 # --- IngressController: internal NLB; keep default apps domain (no spec.domain) ---
 resource "local_file" "ingress_default" {
