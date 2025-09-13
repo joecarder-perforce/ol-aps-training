@@ -315,3 +315,18 @@ resource "aws_iam_role_policy" "master_s3_registry" {
   role   = aws_iam_role.master.id
   policy = data.aws_iam_policy_document.master_s3_registry.json
 }
+
+# Public Route53 policy
+data "aws_iam_policy_document" "master_route53_public" {
+  statement {
+    sid       = "Route53WritePublicZone"
+    effect    = "Allow"
+    actions   = ["route53:ChangeResourceRecordSets"]
+    resources = ["arn:aws:route53:::hostedzone/Z05585981WOL2THU9HOG4"] # your public zone id for trng.lab
+  }
+}
+resource "aws_iam_role_policy" "master_route53_public" {
+  name   = "${var.cluster}-master-route53-public"
+  role   = aws_iam_role.master.id
+  policy = data.aws_iam_policy_document.master_route53_public.json
+}
