@@ -15,8 +15,8 @@ resource "null_resource" "ensure_manifests_dir" {
 
 # Authoritative switch: set CloudCredential CR to Passthrough
 resource "local_file" "cco_passthrough_cr" {
-  filename = "${local.workdir}/manifests/00-cco-credentials-mode.yaml"
-  content  = <<YAML
+  filename   = "${local.workdir}/manifests/00-cco-credentials-mode.yaml"
+  content    = <<YAML
 apiVersion: operator.openshift.io/v1
 kind: CloudCredential
 metadata:
