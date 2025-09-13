@@ -13,3 +13,8 @@ output "private_zone_id" {
 output "private_zone_name" {
   value = "${var.cluster}.${var.base_domain}"
 }
+
+output "vpc_id" {
+  description = "ID of the cluster VPC"
+  value       = aws_vpc.main.id
+}

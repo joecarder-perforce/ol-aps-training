@@ -16,17 +16,7 @@ locals {
 data "aws_region" "current" {}
 
 ## Discover the cluster VPC by tag (Cluster=<clusterKey>)
-data "aws_vpc" "cluster" {
-  for_each = local.active_clusters
-  filter {
-    name   = "tag:Cluster"
-    values = [each.key]
-  }
-  filter {
-    name   = "state"
-    values = ["available"]
-  }
-}
+data "aws_vpc" "cluster" {}
 
 
 
@@ -57,6 +47,7 @@ resource "aws_route53_zone" "private" {
 resource "aws_route53_zone_association" "cluster_vpc" {
   for_each   = local.active_clusters
   zone_id    = aws_route53_zone.private[each.key].zone_id
-  vpc_id     = data.aws_vpc.cluster[each.key].id
-  vpc_region = data.aws_region.current.name
+  vpc_id     = module.cluster[each.key].vpc_id
+  vpc_region = data.aws_region.current.id
+  depends_on = [module.cluster] # ensure VPC exists before associating
 }
