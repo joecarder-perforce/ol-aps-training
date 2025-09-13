@@ -16,5 +16,5 @@ output "private_zone_name" {
 
 output "vpc_id" {
   description = "ID of the cluster VPC"
-  value       = aws_vpc.main.id
+  value       = aws_vpc.this.id
 }

@@ -49,5 +49,5 @@ resource "aws_route53_zone_association" "cluster_vpc" {
   zone_id    = aws_route53_zone.private[each.key].zone_id
   vpc_id     = module.cluster[each.key].vpc_id
   vpc_region = data.aws_region.current.id
-  depends_on = [module.cluster] # ensure VPC exists before associating
+  depends_on = [module.cluster]
 }
