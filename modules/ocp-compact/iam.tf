@@ -46,16 +46,16 @@ data "aws_iam_policy_document" "ccm_readonly" {
 data "aws_iam_policy_document" "master_route53" {
   # Write limited to this cluster's PHZ
   statement {
-    sid     = "Route53WriteZoneScoped"
-    effect  = "Allow"
-    actions = ["route53:ChangeResourceRecordSets"]
+    sid       = "Route53WriteZoneScoped"
+    effect    = "Allow"
+    actions   = ["route53:ChangeResourceRecordSets"]
     resources = ["arn:aws:route53:::hostedzone/${var.private_zone_id}"]
   }
 
   # Read/list as needed by operators
   statement {
-    sid     = "Route53Read"
-    effect  = "Allow"
+    sid    = "Route53Read"
+    effect = "Allow"
     actions = [
       "route53:ListHostedZones",
       "route53:ListHostedZonesByName",
