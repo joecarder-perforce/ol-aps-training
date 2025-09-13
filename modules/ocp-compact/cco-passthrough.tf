@@ -26,28 +26,3 @@ YAML
 
   depends_on = [null_resource.ensure_manifests_dir]
 }
-
-
-
-# --- IngressController: internal NLB; keep default apps domain (no spec.domain) ---
-resource "local_file" "ingress_default" {
-  filename = "${local.workdir}/manifests/zz-02-ingresscontroller.yaml"
-  content  = <<YAML
-apiVersion: operator.openshift.io/v1
-kind: IngressController
-metadata:
-  name: default
-  namespace: openshift-ingress-operator
-spec:
-  endpointPublishingStrategy:
-    type: LoadBalancerService
-    loadBalancer:
-      scope: Internal
-      providerParameters:
-        type: AWS
-        aws:
-          type: NLB
-YAML
-
-  depends_on = [null_resource.ensure_manifests_dir]
-}
