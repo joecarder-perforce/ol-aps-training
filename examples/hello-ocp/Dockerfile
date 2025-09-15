@@ -6,7 +6,7 @@ RUN microdnf install -y python3 && microdnf clean all
 # App files
 WORKDIR /opt/app
 # Write index.html during build so this stays single-file for the demo
-RUN bash -lc 'cat > index.html << "HTML"
+RUN cat > index.html <<'HTML'
 <!doctype html>
 <html lang="en">
   <head><meta charset="utf-8"><title>Hello OpenShift</title></head>
@@ -15,7 +15,8 @@ RUN bash -lc 'cat > index.html << "HTML"
     <p>If you can read this, your Route and Service are working.</p>
   </body>
 </html>
-HTML'
+HTML
+
 
 # Listen on 8080 and run as an arbitrary non-root UID (required by OpenShift SCCs)
 EXPOSE 8080
