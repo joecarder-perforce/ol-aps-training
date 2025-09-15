@@ -124,27 +124,67 @@
         "route53:DisassociateVPCFromHostedZone"
       ],
       "Resource": "*"
-  },
-  {
-      "Sid": "S3ListBuckets",
-    "Effect": "Allow",
-    "Action": "s3:ListAllMyBuckets",
-    "Resource": "*"
-  },
-  {
-      "Sid": "S3IgnBucketsAll",
-      "Effect": "Allow",
-      "Action": "s3:*",
-      "Resource": [
-        "arn:aws:s3:::ocp-*ign-eu-south-1-*"
-      ]
     },
     {
-      "Sid": "S3IgnObjectsAll",
+        "Sid": "S3ListBuckets",
       "Effect": "Allow",
-      "Action": "s3:*",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "*"
+    },
+    {
+        "Sid": "S3IgnBucketsAll",
+        "Effect": "Allow",
+        "Action": "s3:*",
+        "Resource": [
+          "arn:aws:s3:::ocp-*ign-eu-south-1-*"
+        ]
+      },
+      {
+        "Sid": "S3IgnObjectsAll",
+        "Effect": "Allow",
+        "Action": "s3:*",
+        "Resource": [
+          "arn:aws:s3:::ocp-*ign-eu-south-1-*/*"
+        ]
+      },
+      {
+    "Sid": "S3ImageRegistryBucketsAll",
+    "Effect": "Allow",
+    "Action": [
+      "s3:CreateBucket",
+      "s3:DeleteBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketPolicy",
+      "s3:GetBucketVersioning",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetLifecycleConfiguration",
+      "s3:GetPublicAccessBlock",
+      "s3:ListBucket",
+      "s3:PutBucketEncryption",
+      "s3:PutBucketOwnershipControls",
+      "s3:PutBucketPolicy",
+      "s3:PutBucketTagging",
+      "s3:PutBucketVersioning",
+      "s3:PutLifecycleConfiguration",
+      "s3:PutPublicAccessBlock"
+    ],
+    "Resource": [
+      "arn:aws:s3:::*-image-registry-eu-south-1-*"
+    ]
+    },
+    {
+      "Sid": "S3ImageRegistryObjectsAll",
+      "Effect": "Allow",
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
+      ],
       "Resource": [
-        "arn:aws:s3:::ocp-*ign-eu-south-1-*/*"
+        "arn:aws:s3:::*-image-registry-eu-south-1-*/*"
       ]
     }
   ]
