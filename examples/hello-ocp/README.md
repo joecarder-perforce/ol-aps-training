@@ -48,8 +48,10 @@ oc start-build hello --from-dir=. --follow
 # 4) Create a Deployment from the built ImageStream
 oc new-app --image-stream=hello:latest --name hello
 
-# 5) Expose a Service on 8080 and create a Route
-oc expose deployment/hello --port=8080 --target-port=8080 || true
+# 5) # Confirm a Service exists
+oc get svc hello
+
+# If it exists (very likely), create the Route:
 oc expose service/hello
 
 # 6) Print the Route host
