@@ -58,19 +58,11 @@ oc expose service/hello
 APP_HOST=$(oc -n hello-world get route hello -o jsonpath='{.spec.host}')
 echo "App route: http://$APP_HOST"
 
-# 7) If your apps DNS is PRIVATE but the router NLB is PUBLIC, add /etc/hosts
-LB_DNS=$(oc -n openshift-ingress get svc/router-default -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
-APP_IP=$(dig +short "$LB_DNS" | head -n1)
-echo "Router LB: $LB_DNS -> $APP_IP"
-echo "Add to /etc/hosts (requires sudo):"
-echo "  $APP_IP  $APP_HOST"
+# 7) Verify public IP to add to /etc/hosts
+dig +short $(oc -n openshift-ingress get svc/router-default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}') | head -n1
 
-# One-liner to append (careful: appends, won’t dedupe)
-# sudo sh -c "echo '$APP_IP  $APP_HOST' >> /etc/hosts"
-
-# 8) Test
-curl -I "http://$APP_HOST" || true
-echo "Now open: http://$APP_HOST"
+# Test and verify
+hit the route that was created in your web broweser
 ```
 
 ---
