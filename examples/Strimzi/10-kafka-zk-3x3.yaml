@@ -1,0 +1,64 @@
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: demo-zk
+  namespace: kafka
+  labels:
+    app.kubernetes.io/part-of: strimzi-lab
+spec:
+  kafka:
+    # Use a Kafka version supported by Strimzi 0.45.x (adjust as desired).
+    version: 3.9.1
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    config:
+      # Standard replication settings for a 3-broker cluster
+      default.replication.factor: 3
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      min.insync.replicas: 2
+      # Optional: reduce noise in small labs
+      log.message.format.version: "3.9"
+      inter.broker.protocol.version: "3.9"
+    storage:
+      type: persistent-claim
+      class: gp3-csi      # <-- change to your StorageClass if different
+      size: 100Gi
+      deleteClaim: false
+    # Optional resource hints for training-sized clusters (uncomment/tune as needed)
+    # resources:
+    #   requests:
+    #     cpu: "500m"
+    #     memory: "2Gi"
+    #   limits:
+    #     cpu: "2"
+    #     memory: "4Gi"
+
+  zookeeper:
+    replicas: 3
+    storage:
+      type: persistent-claim
+      class: gp3-csi      # <-- change to your StorageClass if different
+      size: 50Gi
+      deleteClaim: false
+    # resources:
+    #   requests:
+    #     cpu: "250m"
+    #     memory: "1Gi"
+    #   limits:
+    #     cpu: "1"
+    #     memory: "2Gi"
+
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
