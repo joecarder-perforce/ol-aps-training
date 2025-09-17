@@ -83,18 +83,20 @@ All should become **Running** with **READY 1/1 (or 2/2 for EO)**.
 
 ---
 
-## 4) Quick smoke test (optional)
+## 4) Cluster Verification and User Testing
 
 Create a test topic (internal, 3 partitions/replicas):
 ```bash
 oc apply -f examples/Strimzi/20-demo-topic.yaml
 ```
 
-== Manually consuming a topic  from your minikube Kafka broker cluster
+== Manually producing to a topic
+
 
 Let's create the certificates for the kafka consumer/producer test
 
-. create a folder for storing the certificate `mkdir $HOME/sslraw` and switch to that dir `cd $HOME/sslraw`
+. create a folder for storing the certificate `mkdir $HOME/sslraw`
+. create a folder for storing the java keystore `mkdir $HOME/ssl`
 . be sure to have `jq` installed by running `which jq`. If it's not installed, install it
 .. on mac  `brew install jq`
 .. on ubuntu `sudo apt-get install jq`
@@ -102,51 +104,75 @@ Let's create the certificates for the kafka consumer/producer test
 
 .Extracting the certificates and creating a Keystore
 ```
-oc -n kafka get secret lab-cluster-0-cluster-ca-cert -o json | jq '.data["ca.crt"]' -r | base64 --decode >  ca.crt
+oc -n kafka get secret lab-cluster-0-cluster-ca-cert -o json | jq '.data["ca.crt"]' -r | base64 --decode >  $HOME/sslraw/ca.crt
 
-oc -n kafka get secret kafka-user -o json | jq '.data["user.p12"]' -r | base64 --decode >  user.p12
+oc -n kafka get secret kafka-user -o json | jq '.data["user.p12"]' -r | base64 --decode >  $HOME/sslraw/user.p12
 
-oc -n kafka get secret kafka-user -o json | jq '.data["user.password"]' -r | base64 --decode >  user.password
+oc -n kafka get secret kafka-user -o json | jq '.data["user.password"]' -r | base64 --decode >  $HOME/sslraw/user.password
 
 ```
 
 .Create the keystore
 ```
 keytool -importkeystore \
-        -deststorepass passw0rd -destkeypass passw0rd -destkeystore my-user.jks \
-        -srckeystore user.p12 -srcstoretype PKCS12 -srcstorepass $(cat user.password) \
-        -alias my-user
+        -deststorepass passw0rd -destkeypass passw0rd -destkeystore $HOME/ssl/my-user.jks \
+        -srckeystore $HOME/sslraw/user.p12 -srcstoretype PKCS12 -srcstorepass $(cat $HOME/sslraw/user.password) \
+        -alias kafka-user
 ```
 
 .Create the trust store
 ```
-keytool -import -file ./ca.crt -alias my-cluster-ca -keystore truststore.jks -deststorepass passw0rd  -noprompt
+keytool -import -file $HOME/sslraw/ca.crt -alias lab-cluster-0-ca -keystore $HOME/ssl/truststore.jks -deststorepass passw0rd  -noprompt
 ```
 
 .Setup kafka consumers for SSL
 . Change your home directory `cd` and hit enter
-. Download and unzip Apache Kafka (at the time of writing, this document is using 3.1.0 )
+. Download and unzip Apache Kafka (to keep using Zookeeper for this training we are using 3.9.1 )
 .. `wget https://dlcdn.apache.org/kafka/3.9.1/kafka_2.12-3.9.1.tgz`
 .. `tar -xvzf kafka_2.12-3.9.1.tgz`
-. Let's prepare a place for the SSL certificates in the unzipped kafka distribution
-.. `mkdir ./kafka_2.12-3.9.1/ssl`
-.. `cp sslraw/truststore.jks ./kafka_2.12-3.9.1/ssl`
-.. `cp sslraw/my-user.jks ./kafka_2.12-3.9.1/ssl`
 
-. Create a file `./kafka_2.12-3.9.1/ssl/client-ssl-auth.properties` copy these contents into it:
-.. `vi ./kafka_2.12-3.9.1/ssl/client-ssl-auth.properties`
+. Create a file `$HOME/ssl/client-ssl-auth.properties` copy these contents into it:
+.. `vi $HOME/ssl/client-ssl-auth.properties`
 
 .client-ssl-auth.properties
 ```
 security.protocol=SSL
-ssl.truststore.location=/home/*{user-name}*/kafka_2.12-3.9.1/ssl/truststore.jks
+ssl.truststore.location=/home/*{user-name}*/ssl/truststore.jks
 ssl.truststore.password=passw0rd
-ssl.keystore.location=/home/*{user-name}*/kafka_2.12-3.9.1/ssl/my-user.jks
+ssl.keystore.location=/home/*{user-name}*/ssl/my-user.jks
 ssl.keystore.password=passw0rd
 ssl.key.password=passw0rd
 ```
 ---
+Get Cluster IP for my-cluster-kafka-tls-0 and my-cluster-kafka-tls-bootstrap
+```
+oc -n kafka get route
+```
+```
+NAME                            HOST/PORT                                                PATH   SERVICES                                 PORT   TERMINATION   WILDCARD
+lab-cluster-0-kafka-0           lab-cluster-0-kafka-0-kafka.apps.dev0.trng.lab                  lab-cluster-0-kafka-0                    9094   passthrough   None
+lab-cluster-0-kafka-1           lab-cluster-0-kafka-1-kafka.apps.dev0.trng.lab                  lab-cluster-0-kafka-1                    9094   passthrough   None
+lab-cluster-0-kafka-2           lab-cluster-0-kafka-2-kafka.apps.dev0.trng.lab                  lab-cluster-0-kafka-2                    9094   passthrough   None
+lab-cluster-0-kafka-bootstrap   lab-cluster-0-kafka-bootstrap-kafka.apps.dev0.trng.lab          lab-cluster-0-kafka-external-bootstrap   9094   passthrough   None
+```
+Now, we will attach a kafka consumer to the lab-topic topic we created
+```
+ kafka_2.12-3.9.1/bin/kafka-console-consumer.sh \
+  --bootstrap-server "lab-cluster-0-kafka-bootstrap-kafka.apps.dev0.trng.lab:443" \
+  --consumer.config $HOME/ssl/client-ssl-auth.properties \
+  --topic lab-topic \
+  --group lab-consumer \
+  --from-beginning
+```
+Then, in a new ssh terminal session we attach a console producer to produce message to the lab-topic
 
+From the home directory:
+```
+kafka_2.12-3.9.1/bin/kafka-console-producer.sh \
+  --bootstrap-server "lab-cluster-0-kafka-bootstrap-kafka.apps.dev0.trng.lab:443" \
+  --producer.config $HOME/ssl/client-ssl-auth.properties \
+  --topic lab-topic
+```
 ## Tuning notes
 
 - **Storage classes/sizes:** Adjust `storage.class` and `size` in `10-kafka-cluster` to match your environment.
