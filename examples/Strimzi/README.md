@@ -10,7 +10,7 @@ This repo installs **Strimzi 0.45.x** (last series that supports ZooKeeper) and 
 
 ## Prerequisites
 
-- OpenShift **4.19** cluster; you are `cluster-admin`.
+- OpenShift **4.19** cluster; you are `kubeadmin`.
 - `oc` CLI logged in.
 - Working **default StorageClass** (adjust class names in YAMLs if needed; examples use `gp3-csi`).
 - Internet egress to pull the Strimzi release assets and container images (or mirror them internally).
@@ -23,7 +23,7 @@ This repo installs **Strimzi 0.45.x** (last series that supports ZooKeeper) and 
 .
 ├── README.md
 ├── 00-namespace.yaml
-├── 10-kafka-zk-3x3.yaml
+├── 10-kafka-cluster.yaml
 └── 20-demo-topic.yaml
 ```
 
@@ -32,23 +32,21 @@ This repo installs **Strimzi 0.45.x** (last series that supports ZooKeeper) and 
 ## 1) Create the project/namespace
 
 ```bash
-oc apply -f manifests/00-namespace.yaml
+oc apply -f examples/Strimzi/00-namespace.yaml
 ```
 
 ---
 
 ## 2) Install Strimzi **0.45.x** (operator, CRDs)
 
-> We install from the official release bundle to ensure all CRDs/RBAC are correct for 0.45.
+> We install from the official release from the operator hub
 
 ```bash
-STRIMZI_VERSION=0.45.0
-curl -L -o /tmp/strimzi-${STRIMZI_VERSION}.zip   https://github.com/strimzi/strimzi-kafka-operator/releases/download/${STRIMZI_VERSION}/strimzi-${STRIMZI_VERSION}.zip
-
-unzip -q /tmp/strimzi-${STRIMZI_VERSION}.zip -d /tmp/strimzi-${STRIMZI_VERSION}
-
-# Apply CRDs + Cluster Operator into the kafka namespace
-oc apply -n kafka -f /tmp/strimzi-${STRIMZI_VERSION}/strimzi-${STRIMZI_VERSION}/install/cluster-operator
+Select Operators in the Main Menu
+Navigate to the OperatorHub sub menu item
+Search for Strimzi
+Select 0.45.0
+Run in a specified name space, select the name space kafka
 ```
 
 **Verify operator is ready:**
@@ -56,14 +54,12 @@ oc apply -n kafka -f /tmp/strimzi-${STRIMZI_VERSION}/strimzi-${STRIMZI_VERSION}/
 oc get deploy -n kafka | grep cluster-operator
 oc get pods -n kafka
 ```
-Wait until the **cluster-operator** pod is **Running/Ready**.
-
 ---
 
 ## 3) Deploy Kafka (3) + ZooKeeper (3)
 
 ```bash
-oc apply -f manifests/10-kafka-zk-3x3.yaml
+oc apply -f manifests/10-kafka-cluster.yaml
 ```
 
 **Watch reconcile:**
@@ -95,7 +91,7 @@ oc run -n kafka kt --image=quay.io/strimzi/kafka:latest --restart=Never -it --rm
 
 ## Tuning notes
 
-- **Storage classes/sizes:** Adjust `storage.class` and `size` in `10-kafka-zk-3x3.yaml` to match your environment.
+- **Storage classes/sizes:** Adjust `storage.class` and `size` in `10-kafka-cluster` to match your environment.
 - **Listeners:** Examples expose **internal** listeners only (`ClusterIP`). For routes/LoadBalancer ingress, we will add a `type: route` or `type: loadbalancer` listener and configure TLS/users.
 - **Resources:** For small training clusters, defaults are fine. For heavier loads, set CPU/memory requests/limits under `kafka.resources` and `zookeeper.resources`.
 - **Entity Operator:** Enabled for convenience (Topic/User operators). Remove if you don’t need them.
