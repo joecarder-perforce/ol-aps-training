@@ -26,14 +26,14 @@ spec:
         # Optional: you may set explicit hostnames if you want stable, known DNS.
         # configuration:
         #   bootstrap:
-        #     host: demo-zk-kafka-bootstrap-kafka.apps.<your-cluster-domain>
+        #     host: kafka-bootstrap.apps.<your-cluster-domain>
         #   brokers:
         #   - broker: 0
-        #     host: demo-zk-kafka-0-kafka.apps.<your-cluster-domain>
+        #     host: kafka-0.apps.<your-cluster-domain>
         #   - broker: 1
-        #     host: demo-zk-kafka-1-kafka.apps.<your-cluster-domain>
+        #     host: kafka-1.apps.<your-cluster-domain>
         #   - broker: 2
-        #     host: demo-zk-kafka-2-kafka.apps.<your-cluster-domain>
+        #     host: kafka-2.apps.<your-cluster-domain>
     config:
       default.replication.factor: 3
       offsets.topic.replication.factor: 3
@@ -45,7 +45,7 @@ spec:
     storage:
       type: persistent-claim
       class: gp3-csi
-      size: 100Gi
+      size: 30Gi
       deleteClaim: false
 
   zookeeper:

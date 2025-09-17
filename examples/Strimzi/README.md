@@ -22,13 +22,10 @@ This repo installs **Strimzi 0.45.x** (last series that supports ZooKeeper) and 
 ```
 .
 ├── README.md
-└── manifests
-    ├── 00-namespace.yaml
-    ├── 10-kafka-zk-3x3.yaml
-    └── 20-demo-topic.yaml     # optional smoke-test topic
+├── 00-namespace.yaml
+├── 10-kafka-zk-3x3.yaml
+└── 20-demo-topic.yaml
 ```
-
-You can add additional examples later (topics, users, external listeners, etc.).
 
 ---
 
@@ -99,7 +96,7 @@ oc run -n kafka kt --image=quay.io/strimzi/kafka:latest --restart=Never -it --rm
 ## Tuning notes
 
 - **Storage classes/sizes:** Adjust `storage.class` and `size` in `10-kafka-zk-3x3.yaml` to match your environment.
-- **Listeners:** Examples expose **internal** listeners only (`ClusterIP`). For routes/LoadBalancer ingress, add a `type: route` or `type: loadbalancer` listener and configure TLS/users.
+- **Listeners:** Examples expose **internal** listeners only (`ClusterIP`). For routes/LoadBalancer ingress, we will add a `type: route` or `type: loadbalancer` listener and configure TLS/users.
 - **Resources:** For small training clusters, defaults are fine. For heavier loads, set CPU/memory requests/limits under `kafka.resources` and `zookeeper.resources`.
 - **Entity Operator:** Enabled for convenience (Topic/User operators). Remove if you don’t need them.
 
