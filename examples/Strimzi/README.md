@@ -66,10 +66,18 @@ oc apply -f examples/Strimzi/10-kafka-cluster.yaml
 ```bash
 oc get pods -n kafka -w
 ```
+```
 You should see:
-- `demo-zk-zookeeper-0..2`
-- `demo-zk-kafka-0..2`
-- `demo-zk-entity-operator-*`
+NAME                                               READY   STATUS    RESTARTS   AGE
+lab-cluster-0-entity-operator-69bc77d4f8-jp8n5     2/2     Running   0          24s
+lab-cluster-0-kafka-0                              1/1     Running   0          59s
+lab-cluster-0-kafka-1                              1/1     Running   0          59s
+lab-cluster-0-kafka-2                              1/1     Running   0          59s
+lab-cluster-0-zookeeper-0                          1/1     Running   0          97s
+lab-cluster-0-zookeeper-1                          1/1     Running   0          97s
+lab-cluster-0-zookeeper-2                          1/1     Running   0          97s
+strimzi-cluster-operator-v0.45.0-db47f489b-ph8gf   1/1     Running   0          119m
+```
 
 All should become **Running** with **READY 1/1 (or 2/2 for EO)**.
 
@@ -79,14 +87,64 @@ All should become **Running** with **READY 1/1 (or 2/2 for EO)**.
 
 Create a test topic (internal, 3 partitions/replicas):
 ```bash
-oc apply -f manifests/20-demo-topic.yaml
+oc apply -f examples/Strimzi/20-demo-topic.yaml
 ```
 
-List topics via a temporary Kafka toolbox pod:
-```bash
-oc run -n kafka kt --image=quay.io/strimzi/kafka:latest --restart=Never -it --rm --   bash -lc 'bin/kafka-topics.sh --bootstrap-server demo-zk-kafka-bootstrap:9092 --list'
+== Manually consuming a topic  from your minikube Kafka broker cluster
+
+Let's create the certificates for the kafka consumer/producer test
+
+. create a folder for storing the certificate `mkdir $HOME/sslraw` and switch to that dir `cd $HOME/sslraw`
+. be sure to have `jq` installed by running `which jq`. If it's not installed, install it
+.. on mac  `brew install jq`
+.. on ubuntu `sudo apt-get install jq`
+. extract the certificates from Kubernetes:
+
+.Extracting the certificates and creating a Keystore
+```
+oc -n kafka get secret lab-cluster-0-cluster-ca-cert -o json | jq '.data["ca.crt"]' -r | base64 --decode >  ca.crt
+
+oc -n kafka get secret kafka-user -o json | jq '.data["user.p12"]' -r | base64 --decode >  user.p12
+
+oc -n kafka get secret kafka-user -o json | jq '.data["user.password"]' -r | base64 --decode >  user.password
+
 ```
 
+.Create the keystore
+```
+keytool -importkeystore \
+        -deststorepass passw0rd -destkeypass passw0rd -destkeystore my-user.jks \
+        -srckeystore user.p12 -srcstoretype PKCS12 -srcstorepass $(cat user.password) \
+        -alias my-user
+```
+
+.Create the trust store
+```
+keytool -import -file ./ca.crt -alias my-cluster-ca -keystore truststore.jks -deststorepass passw0rd  -noprompt
+```
+
+.Setup kafka consumers for SSL
+. Change your home directory `cd` and hit enter
+. Download and unzip Apache Kafka (at the time of writing, this document is using 3.1.0 )
+.. `wget https://dlcdn.apache.org/kafka/3.9.1/kafka_2.12-3.9.1.tgz`
+.. `tar -xvzf kafka_2.12-3.9.1.tgz`
+. Let's prepare a place for the SSL certificates in the unzipped kafka distribution
+.. `mkdir ./kafka_2.12-3.9.1/ssl`
+.. `cp sslraw/truststore.jks ./kafka_2.12-3.9.1/ssl`
+.. `cp sslraw/my-user.jks ./kafka_2.12-3.9.1/ssl`
+
+. Create a file `./kafka_2.12-3.9.1/ssl/client-ssl-auth.properties` copy these contents into it:
+.. `vi ./kafka_2.12-3.9.1/ssl/client-ssl-auth.properties`
+
+.client-ssl-auth.properties
+```
+security.protocol=SSL
+ssl.truststore.location=/home/*{user-name}*/kafka_2.12-3.9.1/ssl/truststore.jks
+ssl.truststore.password=passw0rd
+ssl.keystore.location=/home/*{user-name}*/kafka_2.12-3.9.1/ssl/my-user.jks
+ssl.keystore.password=passw0rd
+ssl.key.password=passw0rd
+```
 ---
 
 ## Tuning notes
@@ -102,14 +160,13 @@ oc run -n kafka kt --image=quay.io/strimzi/kafka:latest --restart=Never -it --rm
 
 ```bash
 # Delete the Kafka cluster (PVCs retained unless you set deleteClaim: true)
-oc delete -f manifests/10-kafka-zk-3x3.yaml
+oc delete -f examples/Strimzi/10-kafka-zk-3x3.yaml
 
 # Remove Strimzi operator resources
-STRIMZI_VERSION=0.45.0
-oc delete -n kafka -f /tmp/strimzi-${STRIMZI_VERSION}/strimzi-${STRIMZI_VERSION}/install/cluster-operator
+Delete the Operator from OperatorHub
 
 # Finally remove the namespace (deletes PVCs unless you moved them)
-oc delete -f manifests/00-namespace.yaml
+oc delete -f examples/Strimzi/00-namespace.yaml
 ```
 
 ---
