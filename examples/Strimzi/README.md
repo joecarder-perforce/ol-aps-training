@@ -59,7 +59,7 @@ oc get pods -n kafka
 ## 3) Deploy Kafka (3) + ZooKeeper (3)
 
 ```bash
-oc apply -f manifests/10-kafka-cluster.yaml
+oc apply -f examples/Strimzi/10-kafka-cluster.yaml
 ```
 
 **Watch reconcile:**
