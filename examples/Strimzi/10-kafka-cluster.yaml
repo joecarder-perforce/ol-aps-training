@@ -104,7 +104,6 @@ spec:
   podMetricsEndpoints:
   - port: zookeeper-metrics
     interval: 30s
---- null
 ---
 kind: ConfigMap
 apiVersion: v1
