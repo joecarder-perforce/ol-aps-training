@@ -16,3 +16,4 @@ spec:
     camel.kamelet.http-source.period: "10000"
     camel.kamelet.http-source.contentType: "application/json"
     camel.source.convertBodyTo: "java.lang.String"
+    camel.source.endpoint.streamCache: "true"
