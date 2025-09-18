@@ -12,5 +12,6 @@ spec:
   tasksMax: 1
   config:
     topics: lab-topic
-    consumer.group.id: connect-sink
-    consumer.auto.offset.reset: earliest
+    camel.sink.url: "log:connect"
+    camel.sink.endpoint.showAll: "true"
+    camel.sink.endpoint.level: "INFO"
