@@ -17,3 +17,5 @@ spec:
     camel.kamelet.http-source.contentType: "application/json"
     camel.source.transform: "${bodyAs(String)}"
     camel.main.streamCachingEnabled: "false"
+    value.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter.schemas.enable: "false"
