@@ -38,10 +38,10 @@ spec:
       type: imagestream
       image: http-connect:latest
     plugins:
-      - name: camel-httpsource
+      - name: camel-http-source
         artifacts:
           - type: maven
             repository: https://repo1.maven.org/maven2
             group: org.apache.camel.kafkaconnector
-            artifact: camel-httpsource-kafka-connector
-            version: 4.10.0
+            artifact: camel-http-source-kafka-connector
+            version: 4.11.0

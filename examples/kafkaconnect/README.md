@@ -15,10 +15,12 @@ Ensure the namespace/cluster/topic exist (you likely already applied your cluste
 ```
 cd examples/kafkaconnect
 ```
-## 1) Deploy Kafka Connect (build to ImageStream)
+## 1) Deploy Kafka Connect (w/build to ImageStream)
 ```bash
+oc -n kafka apply -f 05-imagestream.yaml
 oc -n kafka apply -f 10-kafkaconnect-with-camel.yaml
-oc -n kafka wait --for=condition=Ready kafkaconnect/http-connect --timeout=10m
+oc -n kafka get buildconfigs
+oc -n kafka logs -f build/http-connect-connect-build-##
 ```
 
 ## 2) Start the HTTP source + console sink
