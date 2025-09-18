@@ -1,0 +1,8 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: http-connect
+  namespace: kafka
+spec:
+  lookupPolicy:
+    local: true
