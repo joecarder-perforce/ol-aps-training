@@ -12,6 +12,9 @@ Ensure the namespace/cluster/topic exist (you likely already applied your cluste
 - Namespace `kafka`
 - Kafka `lab-cluster-0` and KafkaUser `kafka-user`
 - KafkaTopic `lab-topic`
+```
+cd examlpes/kafkaconnect
+```
 
 ## 1) Create Connect internal topics
 ```bash
