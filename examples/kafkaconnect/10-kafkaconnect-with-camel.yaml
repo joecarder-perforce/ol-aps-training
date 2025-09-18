@@ -3,29 +3,36 @@ kind: KafkaConnect
 metadata:
   name: http-connect
   namespace: kafka
-  labels:
-    strimzi.io/cluster: lab-cluster-0
 spec:
   version: 3.9.0
   replicas: 1
+  #Cluster bootstrap (Route over TLS)
   bootstrapServers: lab-cluster-0-kafka-bootstrap-kafka.apps.dev0.trng.lab:443
+
+  # Trust the Kafka cluster CA presented by the Route
   tls:
     trustedCertificates:
       - secretName: lab-cluster-0-cluster-ca-cert
         certificate: ca.crt
+
+  # Client TLS auth using KafkaUser 'kafka-user'
   authentication:
     type: tls
     certificateAndKey:
       secretName: kafka-user
       certificate: user.crt
       key: user.key
+
+  # Let Connect auto-create its internal topics; just set replication factors
   config:
     group.id: http-connect
-    offset.storage.topic: _http-connect-offsets
-    config.storage.topic: _http-connect-configs
-    status.storage.topic: _http-connect-status
+    config.storage.replication.factor: 3
+    offset.storage.replication.factor: 3
+    status.storage.replication.factor: 3
     key.converter: org.apache.kafka.connect.storage.StringConverter
     value.converter: org.apache.kafka.connect.storage.StringConverter
+
+  # Build the Connect image with Camel HTTP Source into the OpenShift ImageStream
   build:
     output:
       type: imagestream
