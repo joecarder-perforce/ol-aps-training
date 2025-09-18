@@ -47,3 +47,10 @@ spec:
             group: org.apache.camel.kafkaconnector
             artifact: camel-http-source-kafka-connector
             version: 4.11.0
+      - name: camel-log
+        artifacts:
+          - type: maven
+            repository: https://repo1.maven.org/maven2
+            group: org.apache.camel.kafkaconnector
+            artifact: camel-log-kafka-connector
+            version: 4.11.0
