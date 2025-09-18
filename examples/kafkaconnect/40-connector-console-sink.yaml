@@ -15,3 +15,4 @@ spec:
     camel.sink.path.loggerName: "connect"
     camel.sink.endpoint.showAll: "true"
     camel.sink.endpoint.level: "INFO"
+    camel.sink.endpoint.showStreams: "true"
