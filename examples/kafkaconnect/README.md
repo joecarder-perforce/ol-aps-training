@@ -17,16 +17,16 @@ cd examples/kafkaconnect
 ```
 ## 1) Deploy Kafka Connect (w/build to ImageStream)
 ```bash
-oc -n kafka apply -f 05-imagestream.yaml
-oc -n kafka apply -f 10-kafkaconnect-with-camel.yaml
+oc -n kafka apply -f examples/kafkaconnect/05-imagestream.yaml
+oc -n kafka apply -f examples/kafkaconnect/10-kafkaconnect-with-camel.yaml
 oc -n kafka get buildconfigs
 oc -n kafka start-build http-connect-connect-build --wait --follow
 ```
 
 ## 2) Start the HTTP source + console sink
 ```bash
-oc -n kafka apply -f 30-connector-http-source.yaml
-oc -n kafka apply -f 40-connector-console-sink.yaml
+oc -n kafka apply -f examples/kafkaconnect/30-connector-http-source.yaml
+oc -n kafka apply -f examples/kafkaconnect/40-connector-console-sink.yaml
 oc -n kafka get kafkaconnector
 ```
 
@@ -39,25 +39,14 @@ oc -n kafka logs -f "$CONNECT_POD" -c kafka-connect
 ### Reset
 ```bash
 oc -n kafka delete kafkaconnector console-sink http-openmeteo-source
-oc -n kafka apply -f 30-connector-http-source.yaml
-oc -n kafka apply -f 40-connector-console-sink.yaml
+oc -n kafka apply -f examples/kafkaconnect/30-connector-http-source.yaml
+oc -n kafka apply -f examples/kafkaconnect/40-connector-console-sink.yaml
 ```
 
 ## Clean up
 ```bash
-oc -n kafka delete -f 40-connector-console-sink.yaml || true
-oc -n kafka delete -f 30-connector-http-source.yaml || true
-oc -n kafka delete -f 10-kafkaconnect-with-camel.yaml || true
-oc -n kafka delete -f 01-connect-internals.yaml || true
+oc -n kafka delete -f examples/kafkaconnect/40-connector-console-sink.yaml || true
+oc -n kafka delete -f examples/kafkaconnect/30-connector-http-source.yaml || true
+oc -n kafka delete -f examples/kafkaconnect/10-kafkaconnect-with-camel.yaml || true
+oc -n kafka delete -f examples/kafkaconnect/01-connect-internals.yaml || true
 ```
-
-## Troubleshooting
-- Describe KafkaConnect for build status:
-  ```bash
-  oc -n kafka describe kafkaconnect http-connect
-  oc -n kafka get builds
-  oc -n kafka logs build/$(oc -n kafka get builds -o name | tail -n1)
-  ```
-- TLS assets required:
-  - Secret `lab-cluster-0-cluster-ca-cert` (`ca.crt`)
-  - Secret `kafka-user` (`user.crt`, `user.key`)
