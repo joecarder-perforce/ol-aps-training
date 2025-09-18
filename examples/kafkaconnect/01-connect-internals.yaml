@@ -1,0 +1,38 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: _http-connect-configs
+  namespace: kafka
+  labels: { strimzi.io/cluster: lab-cluster-0 }
+spec:
+  partitions: 1
+  replicas: 3
+  config:
+    cleanup.policy: compact
+    min.insync.replicas: 2
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: _http-connect-offsets
+  namespace: kafka
+  labels: { strimzi.io/cluster: lab-cluster-0 }
+spec:
+  partitions: 25
+  replicas: 3
+  config:
+    cleanup.policy: compact
+    min.insync.replicas: 2
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: _http-connect-status
+  namespace: kafka
+  labels: { strimzi.io/cluster: lab-cluster-0 }
+spec:
+  partitions: 5
+  replicas: 3
+  config:
+    cleanup.policy: compact
+    min.insync.replicas: 2

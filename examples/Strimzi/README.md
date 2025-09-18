@@ -173,6 +173,15 @@ kafka_2.12-3.9.1/bin/kafka-console-producer.sh \
   --producer.config $HOME/ssl/client-ssl-auth.properties \
   --topic lab-topic
 ```
+## Working with Zookeeper
+First we need to setup a tunnel as there isn't a external service aviable to Zookeeper from the jump box as clients never have a need to talk directly with Zookeeper.
+
+Launch tunnel as background service
+```
+oc -n kafka port-forward svc/lab-cluster-0-zookeeper-client 12181:2181 &
+```
+to kill it bring to foreground execute `fg %1` hit Ctrl-C
+
 ## Tuning notes
 
 - **Storage classes/sizes:** Adjust `storage.class` and `size` in `10-kafka-cluster` to match your environment.

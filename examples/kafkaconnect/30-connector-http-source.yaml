@@ -1,0 +1,17 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: http-openmeteo-source
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: lab-cluster-0
+    strimzi.io/kind: KafkaConnect
+    strimzi.io/name: http-connect
+spec:
+  class: org.apache.camel.kafkaconnector.httpsource.CamelHttpsourceSourceConnector
+  tasksMax: 1
+  config:
+    topics: lab-topic
+    camel.kamelet.http-source.url: "https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=-0.12&current=temperature_2m"
+    camel.kamelet.http-source.period: "10000"
+    camel.kamelet.http-source.contentType: "application/json"

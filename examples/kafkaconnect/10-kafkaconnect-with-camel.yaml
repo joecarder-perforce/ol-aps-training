@@ -1,0 +1,40 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: http-connect
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: lab-cluster-0
+spec:
+  version: 3.9.0
+  replicas: 1
+  bootstrapServers: lab-cluster-0-kafka-bootstrap-kafka.apps.dev0.trng.lab:443
+  tls:
+    trustedCertificates:
+      - secretName: lab-cluster-0-cluster-ca-cert
+        certificate: ca.crt
+  authentication:
+    type: tls
+    certificateAndKey:
+      secretName: kafka-user
+      certificate: user.crt
+      key: user.key
+  config:
+    group.id: http-connect
+    offset.storage.topic: _http-connect-offsets
+    config.storage.topic: _http-connect-configs
+    status.storage.topic: _http-connect-status
+    key.converter: org.apache.kafka.connect.storage.StringConverter
+    value.converter: org.apache.kafka.connect.storage.StringConverter
+  build:
+    output:
+      type: imagestream
+      image: http-connect:latest
+    plugins:
+      - name: camel-httpsource
+        artifacts:
+          - type: maven
+            repository: https://repo1.maven.org/maven2
+            group: org.apache.camel.kafkaconnector
+            artifact: camel-httpsource-kafka-connector
+            version: 4.10.0

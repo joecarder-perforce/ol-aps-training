@@ -1,0 +1,16 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: console-sink
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: lab-cluster-0
+    strimzi.io/kind: KafkaConnect
+    strimzi.io/name: http-connect
+spec:
+  class: org.apache.kafka.connect.tools.VerifiableSinkConnector
+  tasksMax: 1
+  config:
+    topics: lab-topic
+    consumer.group.id: connect-sink
+    consumer.auto.offset.reset: earliest
