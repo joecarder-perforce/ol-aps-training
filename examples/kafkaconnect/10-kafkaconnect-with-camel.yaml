@@ -54,8 +54,8 @@ spec:
             group: org.apache.camel.kafkaconnector
             artifact: camel-log-sink-kafka-connector
             version: 4.11.0
-          - name: camel-http
-      - artifacts:
+      - name: camel-http
+        artifacts:
           - type: maven
             repository: https://repo1.maven.org/maven2
             group: org.apache.camel.kafkaconnector
