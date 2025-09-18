@@ -15,5 +15,5 @@ spec:
     camel.kamelet.http-source.url: "https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=-0.12&current=temperature_2m"
     camel.kamelet.http-source.period: "10000"
     camel.kamelet.http-source.contentType: "application/json"
-    camel.source.convertBodyTo: "java.lang.String"
-    camel.source.endpoint.streamCache: "true"
+    camel.source.unmarshal: json-jackson
+    camel.source.marshal: json-jackson
