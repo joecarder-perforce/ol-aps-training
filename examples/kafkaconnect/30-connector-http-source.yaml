@@ -8,15 +8,16 @@ metadata:
     strimzi.io/kind: KafkaConnect
     strimzi.io/name: http-connect
 spec:
-  class: org.apache.camel.kafkaconnector.http.CamelHttpSourceConnector
+  class: org.apache.camel.kafkaconnector.httpsource.CamelHttpsourceSourceConnector
   tasksMax: 1
   config:
     topics: lab-topic
     camel.kamelet.http-source.url: "https://api.open-meteo.com/v1/forecast?latitude=35.9&longitude=14.3&current=temperature_2m"
     camel.kamelet.http-source.period: "10000"
     camel.kamelet.http-source.contentType: "application/json"
-    camel.source.convertBodyTo: "java.lang.String"
+    camel.kamelet.http-source.outputType: "string"
     camel.main.streamCachingEnabled: "false"
+    camel.source.convertBodyTo: "java.lang.String"
+    camel.source.transform: "${body instanceof byte[] ? new String((byte[]) body, 'UTF-8') : body}"
     value.converter: "org.apache.kafka.connect.storage.StringConverter"
-    value.converter.schemas.enable: "false" 
-    camel.source.transform: "${new String(body, 'UTF-8')}"   
+    value.converter.schemas.enable: "false"

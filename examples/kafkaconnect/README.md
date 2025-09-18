@@ -20,7 +20,7 @@ cd examples/kafkaconnect
 oc -n kafka apply -f 05-imagestream.yaml
 oc -n kafka apply -f 10-kafkaconnect-with-camel.yaml
 oc -n kafka get buildconfigs
-oc -n kafka logs -f $(oc -n kafka get builds --sort-by=.metadata.creationTimestamp -o name | tail -n1)
+oc -n kafka start-build http-connect-connect-build --wait --follow
 ```
 
 ## 2) Start the HTTP source + console sink
