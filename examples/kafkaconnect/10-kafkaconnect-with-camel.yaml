@@ -3,6 +3,8 @@ kind: KafkaConnect
 metadata:
   name: http-connect
   namespace: kafka
+  annotations:
+    strimzi.io/use-connector-resources: "true"
 spec:
   version: 3.9.0
   replicas: 1
