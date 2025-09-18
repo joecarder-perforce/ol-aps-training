@@ -13,28 +13,22 @@ Ensure the namespace/cluster/topic exist (you likely already applied your cluste
 - Kafka `lab-cluster-0` and KafkaUser `kafka-user`
 - KafkaTopic `lab-topic`
 ```
-cd examlpes/kafkaconnect
+cd examples/kafkaconnect
 ```
-
-## 1) Create Connect internal topics
-```bash
-oc -n kafka apply -f 01-connect-internals.yaml
-```
-
-## 2) Deploy Kafka Connect (build to ImageStream)
+## 1) Deploy Kafka Connect (build to ImageStream)
 ```bash
 oc -n kafka apply -f 10-kafkaconnect-with-camel.yaml
 oc -n kafka wait --for=condition=Ready kafkaconnect/http-connect --timeout=10m
 ```
 
-## 3) Start the HTTP source + console sink
+## 2) Start the HTTP source + console sink
 ```bash
 oc -n kafka apply -f 30-connector-http-source.yaml
 oc -n kafka apply -f 40-connector-console-sink.yaml
 oc -n kafka get kafkaconnector
 ```
 
-## 4) Watch data in Connect logs
+## 3) Watch data in Connect logs
 ```bash
 CONNECT_POD=$(oc -n kafka get pods -l strimzi.io/name=http-connect-connect -o jsonpath='{.items[0].metadata.name}')
 oc -n kafka logs -f "$CONNECT_POD" -c kafka-connect
