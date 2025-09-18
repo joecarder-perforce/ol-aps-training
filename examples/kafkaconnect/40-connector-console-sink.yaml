@@ -8,7 +8,7 @@ metadata:
     strimzi.io/kind: KafkaConnect
     strimzi.io/name: http-connect
 spec:
-  class: org.apache.kafka.connect.tools.VerifiableSinkConnector
+  class: org.apache.camel.kafkaconnector.CamelSinkConnector
   tasksMax: 1
   config:
     topics: lab-topic
