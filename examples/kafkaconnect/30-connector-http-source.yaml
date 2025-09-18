@@ -4,7 +4,7 @@ metadata:
   name: http-openmeteo-source
   namespace: kafka
   labels:
-    strimzi.io/cluster: lab-cluster-0
+    strimzi.io/cluster: http-connect
     strimzi.io/kind: KafkaConnect
     strimzi.io/name: http-connect
 spec:
