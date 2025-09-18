@@ -12,8 +12,10 @@ spec:
   tasksMax: 1
   config:
     topics: lab-topic
+    camel.sink.unmarshal: string
     camel.kamelet.log-sink.loggerName: "connect"
     camel.kamelet.log-sink.level: "INFO"
     camel.kamelet.log-sink.showAll: "true"
     camel.kamelet.log-sink.showStreams: "true"
     camel.kamelet.log-sink.showCachedStreams: "false"
+    camel.kamelet.log-sink.multiline: "true"
