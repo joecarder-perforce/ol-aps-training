@@ -18,4 +18,5 @@ spec:
     camel.source.convertBodyTo: "java.lang.String"
     camel.main.streamCachingEnabled: "false"
     value.converter: "org.apache.kafka.connect.storage.StringConverter"
-    value.converter.schemas.enable: "false"    
+    value.converter.schemas.enable: "false" 
+    camel.source.transform: "${new String(body, 'UTF-8')}"   
