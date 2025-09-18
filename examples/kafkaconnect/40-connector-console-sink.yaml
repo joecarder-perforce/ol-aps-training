@@ -8,10 +8,10 @@ metadata:
     strimzi.io/kind: KafkaConnect
     strimzi.io/name: http-connect
 spec:
-  class: org.apache.camel.kafkaconnector.CamelSinkConnector
+  class: org.apache.camel.kafkaconnector.log.CamelLogSinkConnector
   tasksMax: 1
   config:
     topics: lab-topic
-    camel.sink.url: "log:connect"
+    camel.sink.path.loggerName: "connect"
     camel.sink.endpoint.showAll: "true"
     camel.sink.endpoint.level: "INFO"
