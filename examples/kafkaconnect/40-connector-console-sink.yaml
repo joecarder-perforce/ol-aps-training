@@ -16,5 +16,6 @@ spec:
     camel.kamelet.log-sink.level: "INFO"
     camel.kamelet.log-sink.showAll: "true"
     camel.kamelet.log-sink.showStreams: "true"
+    camel.kamelet.log-sink.showBodyType: "true"
     camel.kamelet.log-sink.showCachedStreams: "false"
     camel.kamelet.log-sink.multiline: "true"
