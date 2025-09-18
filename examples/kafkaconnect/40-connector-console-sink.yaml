@@ -12,7 +12,7 @@ spec:
   tasksMax: 1
   config:
     topics: lab-topic
-    camel.sink.path.loggerName: "connect"
-    camel.sink.endpoint.showAll: "true"
-    camel.sink.endpoint.level: "INFO"
-    camel.sink.endpoint.showStreams: "true"
+    camel.kamelet.log-sink.loggerName: "connect"
+    camel.kamelet.log-sink.level: "INFO"
+    camel.kamelet.log-sink.showAll: "true"
+    camel.kamelet.log-sink.showStreams: "true"
