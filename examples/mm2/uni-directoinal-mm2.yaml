@@ -1,0 +1,79 @@
+
+#Example Manifest only, do not apply directly
+#Replace bootstrap addresses, Secret names, and namespaces to match your environment.
+#Ensure the CA Secrets (*-cluster-ca-cert) exist in the same namespace as MM2.
+#Start one replica first; scale up after you verify replication.
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: mm2-primary-to-dr
+  namespace: kafka
+spec:
+  replicas: 1
+  connectCluster: primary
+
+  # --- Define the two clusters MM2 will talk to ---
+  clusters:
+    - alias: primary
+      # Use INTERNAL bootstrap if MM2 runs inside the same OCP cluster/namespace is OCP Route if external
+      bootstrapServers: primary-kafka-bootstrap.kafka.svc:9093
+      tls:
+        trustedCertificates:
+          - secretName: primary-cluster-ca-cert
+            certificate: ca.crt
+      authentication:
+        type: tls
+        certificateAndKey:
+          # TLS client cert for MM2 on "primary" (create a KafkaUser and use its Secret)
+          secretName: mm2-primary
+          certificate: user.crt
+          key: user.key
+
+    - alias: dr
+      bootstrapServers: dr-kafka-bootstrap.kafka.svc:9093
+      tls:
+        trustedCertificates:
+          - secretName: dr-cluster-ca-cert
+            certificate: ca.crt
+      authentication:
+        type: tls
+        certificateAndKey:
+          secretName: mm2-dr
+          certificate: user.crt
+          key: user.key
+
+  # --- What to mirror and how ---
+  mirrors:
+    - sourceCluster: primary
+      targetCluster: dr
+
+      # Mirror topics & consumer groups matching these patterns
+      topicsPattern: "lab-.*"        # <- change to your app/topic prefix
+      groupsPattern: "lab-.*"
+
+      # DefaultReplicationPolicy prefixes with source alias: payments -> primary.payments
+      sourceConnector:
+        config:
+          # Throughput & safety knobs (tweak as needed)
+          replication.factor: 3
+          offset-syncs.topic.replication.factor: 3
+          heartbeats.topic.replication.factor: 3
+
+          # Keep topic configs in sync (optional but handy for DR)
+          sync.topic.configs.enabled: true
+          sync.topic.acls.enabled: false
+
+      heartbeatConnector:
+        config:
+          heartbeats.topic.replication.factor: 3
+
+      checkpointConnector:
+        config:
+          emit.checkpoints.enabled: true
+          sync.group.offsets.enabled: true
+          refresh.groups.interval.seconds: 30
+
+      # Replication policy (naming)
+      replicationPolicyClass: "org.apache.kafka.connect.mirror.DefaultReplicationPolicy"
+      replicationPolicySeparator: "."

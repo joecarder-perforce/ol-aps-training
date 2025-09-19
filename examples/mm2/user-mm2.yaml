@@ -1,0 +1,25 @@
+#Example Manifest only, do not apply directly
+#Replace bootstrap addresses, Secret names, and namespaces to match your environment.
+#Ensure the CA Secrets (*-cluster-ca-cert) exist in the same namespace as MM2.
+#Start one replica first; scale up after you verify replication.
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: mm2
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: primary-cluster-name   # <-- change per cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    # For labs, you can grant MM2 broad rights; tighten in prod
+    type: simple
+    acls:
+      - operation: All
+        resource: { type: cluster }
+      - operation: All
+        resource: { type: topic, name: "*", patternType: literal }
+      - operation: All
+        resource: { type: group, name: "*", patternType: literal }
